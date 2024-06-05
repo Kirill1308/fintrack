@@ -10,6 +10,7 @@ import com.popov.fintrack.wallet.dto.WalletDTO;
 import com.popov.fintrack.wallet.model.Invitation;
 import com.popov.fintrack.wallet.model.InvitationStatus;
 import com.popov.fintrack.wallet.model.Wallet;
+import com.popov.fintrack.user.model.member.Member;
 import com.popov.fintrack.web.mapper.UserMapper;
 import com.popov.fintrack.web.mapper.WalletMapper;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,14 @@ public class WalletController {
         return walletMapper.toDto(wallet);
     }
 
+    @PostMapping
+    public WalletDTO createWallet(@RequestBody WalletDTO walletDTO) {
+        Wallet wallet = walletMapper.toEntity(walletDTO);
+        Wallet updatedWallet = walletService.createWallet(wallet);
+        return walletMapper.toDto(updatedWallet);
+    }
+
+
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletDTO.id)")
     public WalletDTO updateWallet(@RequestBody WalletDTO walletDTO) {
@@ -64,9 +73,9 @@ public class WalletController {
     @GetMapping("/{walletId}/members")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public List<UserDTO> getWalletMembers(@PathVariable Long walletId) {
-        List<Invitation> invitations = invitationService.findByWalletId(walletId);
-        return invitations.stream()
-                .map(Invitation::getRecipient)
+        List<Member> members = walletService.findAllMembers(walletId);
+        return members.stream()
+                .map(Member::getUser)
                 .map(userMapper::toDto)
                 .toList();
     }
@@ -92,7 +101,9 @@ public class WalletController {
     public String acceptInvitation(@PathVariable String token) {
         Invitation invitation = invitationService.findByToken(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Invitation not found"));
+
         invitation.setStatus(InvitationStatus.ACCEPTED);
+
         invitationService.updateInvitation(invitation);
         return "Invitation accepted";
     }
@@ -100,7 +111,7 @@ public class WalletController {
     @PostMapping("/{walletId}/exclude/{userId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public String excludeUserFromWallet(@PathVariable Long walletId, @PathVariable Long userId) {
-        Invitation invitation = invitationService.findByWalletIdAndRecipientId(walletId, userId)
+        Invitation invitation = invitationService.findInvitation(walletId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invitation not found"));
 
         Properties mailProperties = new Properties();

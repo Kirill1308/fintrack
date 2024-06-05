@@ -24,11 +24,19 @@ CREATE TABLE IF NOT EXISTS users_roles
 CREATE TABLE IF NOT EXISTS wallet
 (
     id       BIGSERIAL PRIMARY KEY,
-    user_id  BIGINT NOT NULL,
     name     VARCHAR(255),
     balance  DOUBLE PRECISION,
-    currency VARCHAR(3),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    currency VARCHAR(3)
+);
+
+CREATE TABLE IF NOT EXISTS wallet_member
+(
+    id        BIGSERIAL PRIMARY KEY,
+    user_id   BIGINT       NOT NULL,
+    wallet_id BIGINT       NOT NULL,
+    role      VARCHAR(255) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (wallet_id) REFERENCES wallet (id)
 );
 
 CREATE TABLE IF NOT EXISTS transaction
@@ -63,18 +71,16 @@ CREATE TABLE invitation
 
 CREATE TABLE IF NOT EXISTS budget
 (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    wallet_id BIGINT NOT NULL,
-    name VARCHAR(255),
-    budgeted_amount DOUBLE PRECISION,
-    currency VARCHAR(255),
-    category VARCHAR(255),
-    status VARCHAR(255),
-    start_date DATE,
-    end_date DATE,
-    creation_date DATE,
+    id               BIGSERIAL PRIMARY KEY,
+    user_id          BIGINT NOT NULL,
+    name             VARCHAR(255),
+    budgeted_amount  DOUBLE PRECISION,
+    currency         VARCHAR(255),
+    category         VARCHAR(255),
+    status           VARCHAR(255),
+    start_date       DATE,
+    end_date         DATE,
+    creation_date    DATE,
     last_update_date DATE,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (wallet_id) REFERENCES wallet (id)
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );

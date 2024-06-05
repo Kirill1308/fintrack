@@ -5,13 +5,11 @@ import com.popov.fintrack.budget.BudgetService;
 import com.popov.fintrack.budget.model.Budget;
 import com.popov.fintrack.budget.model.BudgetStatus;
 import com.popov.fintrack.exception.ResourceNotFoundException;
-import com.popov.fintrack.report.service.impl.ExpenseServiceImpl;
+import com.popov.fintrack.report.service.ExpenseService;
 import com.popov.fintrack.transaction.dto.DateRange;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.user.UserService;
-import com.popov.fintrack.wallet.InvitationService;
 import com.popov.fintrack.wallet.WalletService;
-import com.popov.fintrack.wallet.model.Invitation;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +25,9 @@ public class BudgetServiceImpl implements BudgetService {
 
     private final UserService userService;
     private final WalletService walletService;
-    private final BudgetRepository budgetRepository;
-    private final ExpenseServiceImpl expenseService;
+    private final ExpenseService expenseService;
 
-    private final InvitationService invitationService;
+    private final BudgetRepository budgetRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -51,11 +48,16 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public boolean isMemberOfBudget(Long userId, Long budgetId) {
+        return budgetRepository.existsByIdAndUserId(budgetId, userId);
+    }
+
+    @Override
     @Transactional
     public Budget createBudget(Budget budget) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         budget.setUser(userService.getUserById(userId));
-        budget.setWallet(walletService.getWalletById(budget.getWallet().getId()));
         budget.setStatus(BudgetStatus.ACTIVE);
         return budgetRepository.save(budget);
     }
@@ -63,8 +65,6 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional
     public Budget updateBudget(Budget budget) {
-        Long userId = SecurityUtils.getAuthenticatedUserId();
-        budget.setUser(userService.getUserById(userId));
         return budgetRepository.save(budget);
     }
 
@@ -72,24 +72,6 @@ public class BudgetServiceImpl implements BudgetService {
     @Transactional
     public void deleteBudget(Long budgetId) {
         budgetRepository.deleteById(budgetId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isOwnerOfBudget(Long userId, Long budgetId) {
-        return budgetRepository.existsByUserIdAndId(userId, budgetId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Budget> getInvitedBudgets(Long userId) {
-        List<Invitation> invitations = invitationService.getAcceptedInvitations(userId);
-
-        return invitations.stream()
-                .map(Invitation::getWallet)
-                .flatMap(wallet -> wallet.getBudgets().stream())
-                .peek(this::updateBudgetAmounts)
-                .toList();
     }
 
     private void updateBudgetAmounts(Budget budget) {

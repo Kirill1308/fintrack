@@ -2,8 +2,8 @@ package com.popov.fintrack.user.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.popov.fintrack.user.model.Gender;
-import com.popov.fintrack.validation.OnCreate;
-import com.popov.fintrack.validation.OnUpdate;
+import com.popov.fintrack.utills.validation.OnCreate;
+import com.popov.fintrack.utills.validation.OnUpdate;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;

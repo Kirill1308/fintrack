@@ -35,7 +35,8 @@
     <div id="div">
         <h1 style="text-align: center">Invitation</h1>
         <p>Hello, ${name}!</p>
-        <p>You have been invited by ${sender} to join a wallet. Please click the link below to accept the invitation:</p>
+        <p>You have been invited by ${sender} to join a wallet. Please click the link below to accept the
+            invitation:</p>
         <a href="${invitationLink}">Accept Invitation</a>
         <p>With best regards, <br> Fintrack Company</p>
     </div>

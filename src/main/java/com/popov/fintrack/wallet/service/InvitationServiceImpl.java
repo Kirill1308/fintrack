@@ -9,11 +9,11 @@ import com.popov.fintrack.wallet.dto.InvitationRequest;
 import com.popov.fintrack.wallet.model.Invitation;
 import com.popov.fintrack.wallet.model.InvitationStatus;
 import com.popov.fintrack.wallet.model.Wallet;
+import com.popov.fintrack.user.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +22,7 @@ public class InvitationServiceImpl implements InvitationService {
 
     private final WalletService walletService;
     private final UserService userService;
+    private final MemberService memberService;
     private final InvitationRepository invitationRepository;
 
     @Override
@@ -32,13 +33,7 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Invitation> findByWalletId(Long walletId) {
-        return invitationRepository.findByWalletIdAndStatus(walletId, InvitationStatus.ACCEPTED);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Invitation> findByWalletIdAndRecipientId(Long walletId, Long userId) {
+    public Optional<Invitation> findInvitation(Long walletId, Long userId) {
         return invitationRepository.findByWalletIdAndRecipientId(walletId, userId);
     }
 
@@ -69,17 +64,13 @@ public class InvitationServiceImpl implements InvitationService {
     @Transactional
     public void updateInvitation(Invitation invitation) {
         invitationRepository.save(invitation);
+        memberService.addMember(invitation.getWallet(), invitation.getRecipient());
     }
 
     @Override
     @Transactional
     public void deleteInvitation(Invitation invitation) {
         invitationRepository.delete(invitation);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Invitation> getAcceptedInvitations(Long userId) {
-        return invitationRepository.findByRecipientIdAndStatus(userId, InvitationStatus.ACCEPTED);
+        memberService.excludeMember(invitation.getWallet(), invitation.getRecipient());
     }
 }

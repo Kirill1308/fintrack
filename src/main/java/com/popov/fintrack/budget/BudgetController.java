@@ -2,7 +2,8 @@ package com.popov.fintrack.budget;
 
 import com.popov.fintrack.budget.dto.BudgetDTO;
 import com.popov.fintrack.budget.model.Budget;
-import com.popov.fintrack.validation.OnUpdate;
+import com.popov.fintrack.utills.validation.OnCreate;
+import com.popov.fintrack.utills.validation.OnUpdate;
 import com.popov.fintrack.web.mapper.BudgetMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,13 +27,14 @@ public class BudgetController {
 
     @GetMapping("/{budgetId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetId)")
-    public BudgetDTO getById(@PathVariable Long budgetId) {
+    public BudgetDTO getBudgetById(@PathVariable Long budgetId) {
         Budget budget = budgetService.getBudgetById(budgetId);
         return budgetMapper.toDto(budget);
     }
 
     @PostMapping
-    public BudgetDTO create(@RequestBody BudgetDTO budgetDTO) {
+    public BudgetDTO createBudget(final @Validated(OnCreate.class)
+                                  @RequestBody BudgetDTO budgetDTO) {
         Budget budget = budgetMapper.toEntity(budgetDTO);
         Budget createdBudget = budgetService.createBudget(budget);
         return budgetMapper.toDto(createdBudget);
@@ -40,7 +42,8 @@ public class BudgetController {
 
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetDTO.id)")
-    public BudgetDTO update(final @Validated(OnUpdate.class) @RequestBody BudgetDTO budgetDTO) {
+    public BudgetDTO updateBudget(final @Validated(OnUpdate.class)
+                                  @RequestBody BudgetDTO budgetDTO) {
         Budget budget = budgetMapper.toEntity(budgetDTO);
         Budget createdBudget = budgetService.updateBudget(budget);
         return budgetMapper.toDto(createdBudget);
@@ -48,7 +51,7 @@ public class BudgetController {
 
     @DeleteMapping("/{budgetId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetId)")
-    public void delete(@PathVariable Long budgetId) {
+    public void deleteBudget(@PathVariable Long budgetId) {
         budgetService.deleteBudget(budgetId);
     }
 }

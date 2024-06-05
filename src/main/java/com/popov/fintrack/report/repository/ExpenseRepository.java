@@ -105,4 +105,5 @@ public interface ExpenseRepository extends TransactionRepository {
                 .mapToDouble(Transaction::getAmount)
                 .average()
                 .orElse(0.0);
-    }}
+    }
+}

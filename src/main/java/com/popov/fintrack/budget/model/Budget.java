@@ -2,7 +2,6 @@ package com.popov.fintrack.budget.model;
 
 import com.popov.fintrack.transaction.model.Category;
 import com.popov.fintrack.user.model.User;
-import com.popov.fintrack.wallet.model.Wallet;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,10 +28,6 @@ public class Budget implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "wallet_id")
-    private Wallet wallet;
 
     private String name;
     private Double budgetedAmount;

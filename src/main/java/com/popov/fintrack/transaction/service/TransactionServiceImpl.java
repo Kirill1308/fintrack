@@ -63,6 +63,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         Wallet wallet = walletService.getWalletById(transaction.getWalletId());
 
-        return wallet.getUser().getId().equals(userId);
+        return wallet.getMembers().stream()
+                .anyMatch(walletMember -> walletMember.getUser().getId().equals(userId) && walletMember.getRole().equals("OWNER"));
     }
 }

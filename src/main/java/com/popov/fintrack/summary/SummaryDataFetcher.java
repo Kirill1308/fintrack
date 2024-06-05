@@ -1,11 +1,11 @@
 package com.popov.fintrack.summary;
 
+import com.popov.fintrack.report.service.ExpenseService;
+import com.popov.fintrack.report.service.IncomeService;
 import com.popov.fintrack.summary.dto.CustomSummary;
 import com.popov.fintrack.summary.dto.FinancialSummary;
 import com.popov.fintrack.summary.dto.MonthlySummary;
 import com.popov.fintrack.summary.dto.YearlySummary;
-import com.popov.fintrack.report.service.ExpenseService;
-import com.popov.fintrack.report.service.IncomeService;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Category;
 import lombok.RequiredArgsConstructor;

@@ -8,7 +8,7 @@ import com.popov.fintrack.user.dto.user.ProfileImageDTO;
 import com.popov.fintrack.user.dto.user.UserDTO;
 import com.popov.fintrack.user.model.ProfileImage;
 import com.popov.fintrack.user.model.User;
-import com.popov.fintrack.validation.OnUpdate;
+import com.popov.fintrack.utills.validation.OnUpdate;
 import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.dto.WalletDTO;
 import com.popov.fintrack.wallet.model.Wallet;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -102,13 +101,7 @@ public class UserController {
     @GetMapping("/{userId}/budgets")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userId)")
     public List<BudgetDTO> getBudgetsByUserId(@PathVariable Long userId) {
-        List<Budget> ownedBudgets = budgetService.getBudgetsByUserId(userId);
-        List<Budget> invitedBudgets = budgetService.getInvitedBudgets(userId);
-
-        List<Budget> allBudgets = new ArrayList<>();
-        allBudgets.addAll(ownedBudgets);
-        allBudgets.addAll(invitedBudgets);
-
-        return budgetMapper.toDto(allBudgets);
+        List<Budget> budgets = budgetService.getBudgetsByUserId(userId);
+        return budgetMapper.toDto(budgets);
     }
 }

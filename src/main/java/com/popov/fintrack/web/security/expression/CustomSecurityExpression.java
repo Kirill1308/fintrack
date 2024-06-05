@@ -3,9 +3,7 @@ package com.popov.fintrack.web.security.expression;
 import com.popov.fintrack.budget.BudgetService;
 import com.popov.fintrack.transaction.TransactionService;
 import com.popov.fintrack.user.model.Role;
-import com.popov.fintrack.wallet.InvitationService;
 import com.popov.fintrack.wallet.WalletService;
-import com.popov.fintrack.wallet.model.Invitation;
 import com.popov.fintrack.web.security.JwtEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -22,52 +20,24 @@ public class CustomSecurityExpression {
     private final WalletService walletService;
     private final BudgetService budgetService;
     private final TransactionService transactionService;
-    private final InvitationService invitationService;
 
     public boolean hasAccessUser(final Long id) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
-
+        Long userId = getAuthenticatedUserId();
         return userId.equals(id) || hasAnyRole(Role.ROLE_ADMIN);
     }
 
     public boolean hasAccessToWallet(Long walletId) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
-
-        boolean isOwner = walletService.isOwnerOfWallet(userId, walletId);
-        List<Invitation> invitations = invitationService.getAcceptedInvitations(userId);
-        boolean hasBeenInvited = invitations.stream().anyMatch(invitation -> invitation.getWallet().getId().equals(walletId));
-        return isOwner || hasBeenInvited;
+        Long userId = getAuthenticatedUserId();
+        return walletService.isMemberOfWallet(userId, walletId);
     }
 
     public boolean hasAccessToWallets(List<Long> walletIds) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
-
-        for (Long walletId : walletIds) {
-            boolean isOwner = walletService.isOwnerOfWallet(userId, walletId);
-            List<Invitation> invitations = invitationService.getAcceptedInvitations(userId);
-            boolean hasBeenInvited = invitations.stream().anyMatch(invitation -> invitation.getWallet().getId().equals(walletId));
-            if (!(isOwner || hasBeenInvited)) {
-                return false;
-            }
-        }
-
-        return true;
+        return walletIds.stream().allMatch(this::hasAccessToWallet);
     }
 
     public boolean hasAccessToBudget(Long budgetId) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
-
-        boolean isOwner = budgetService.isOwnerOfBudget(userId, budgetId);
-        List<Invitation> invitations = invitationService.getAcceptedInvitations(userId);
-        boolean hasBeenInvited = invitations.stream()
-                .flatMap(invitation -> invitation.getWallet().getBudgets().stream())
-                .anyMatch(budget -> budget.getId().equals(budgetId));
-
-        return isOwner || hasBeenInvited;
+        Long userId = getAuthenticatedUserId();
+        return budgetService.isMemberOfBudget(userId, budgetId);
     }
 
     private boolean hasAnyRole(final Role... roles) {

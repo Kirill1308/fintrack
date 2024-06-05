@@ -1,10 +1,10 @@
 package com.popov.fintrack.summary.service;
 
-import com.popov.fintrack.summary.SummaryService;
 import com.popov.fintrack.summary.SummaryDataFetcher;
+import com.popov.fintrack.summary.SummaryService;
+import com.popov.fintrack.summary.dto.CustomSummary;
 import com.popov.fintrack.summary.dto.FinancialSummary;
 import com.popov.fintrack.summary.dto.MonthlySummary;
-import com.popov.fintrack.summary.dto.CustomSummary;
 import com.popov.fintrack.summary.dto.YearlySummary;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import lombok.RequiredArgsConstructor;

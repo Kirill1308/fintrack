@@ -4,7 +4,7 @@ import com.popov.fintrack.user.dto.auth.JwtRequest;
 import com.popov.fintrack.user.dto.auth.JwtResponse;
 import com.popov.fintrack.user.dto.user.UserDTO;
 import com.popov.fintrack.user.model.User;
-import com.popov.fintrack.validation.OnCreate;
+import com.popov.fintrack.utills.validation.OnCreate;
 import com.popov.fintrack.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;

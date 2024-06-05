@@ -3,7 +3,7 @@ package com.popov.fintrack.budget.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.popov.fintrack.budget.model.BudgetStatus;
 import com.popov.fintrack.transaction.model.Category;
-import com.popov.fintrack.validation.OnUpdate;
+import com.popov.fintrack.utills.validation.OnUpdate;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

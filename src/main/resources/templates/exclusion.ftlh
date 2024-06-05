@@ -35,7 +35,8 @@
     <div id="div">
         <h1 style="text-align: center">Exclusion Notification</h1>
         <p>Hello, ${name}!</p>
-        <p>We regret to inform you that you have been excluded from the wallet ${walletName}. If you believe this is a mistake, please contact the wallet owner.</p>
+        <p>We regret to inform you that you have been excluded from the wallet ${walletName}. If you believe this is a
+            mistake, please contact the wallet owner.</p>
         <p>With best regards, <br> Fintrack Company</p>
     </div>
 </div>

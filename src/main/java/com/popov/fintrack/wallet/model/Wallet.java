@@ -1,18 +1,16 @@
 package com.popov.fintrack.wallet.model;
 
-import com.popov.fintrack.budget.model.Budget;
-import com.popov.fintrack.user.model.User;
+import com.popov.fintrack.user.model.member.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -25,15 +23,12 @@ public class Wallet implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     @OneToMany(mappedBy = "wallet", fetch = FetchType.EAGER)
-    private Set<Budget> budgets;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<Member> members;
 
-    @OneToMany(mappedBy = "wallet", fetch = FetchType.EAGER)
-    private Set<Invitation> invitations;
+//    @OneToMany(mappedBy = "wallet", fetch = FetchType.EAGER)
+//    private Set<Budget> budgets;
 
     private String name;
     private Double balance;

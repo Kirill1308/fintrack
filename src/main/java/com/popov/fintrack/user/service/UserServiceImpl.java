@@ -30,7 +30,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ImageService imageService;
     private final MailService mailService;
-    private final MailProperties mailProperties;
 
     @Override
     @Transactional(readOnly = true)

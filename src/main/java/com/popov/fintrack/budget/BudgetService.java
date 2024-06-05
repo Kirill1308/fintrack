@@ -10,13 +10,11 @@ public interface BudgetService {
 
     List<Budget> getBudgetsByUserId(Long userId);
 
+    boolean isMemberOfBudget(Long userId, Long budgetId);
+
     Budget createBudget(Budget budget);
 
     Budget updateBudget(Budget budget);
 
     void deleteBudget(Long budgetId);
-
-    boolean isOwnerOfBudget(Long userId, Long budgetId);
-
-    List<Budget> getInvitedBudgets(Long userId);
 }

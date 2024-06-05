@@ -2,7 +2,7 @@ package com.popov.fintrack.transaction.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.popov.fintrack.utills.CurrencyCodeDeserializer;
-import com.popov.fintrack.validation.OnUpdate;
+import com.popov.fintrack.utills.validation.OnUpdate;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
