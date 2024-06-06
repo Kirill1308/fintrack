@@ -1,7 +1,6 @@
 package com.popov.fintrack.user.service;
 
 import com.popov.fintrack.email.MailService;
-import com.popov.fintrack.email.props.MailProperties;
 import com.popov.fintrack.email.utils.MailType;
 import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.user.ImageService;

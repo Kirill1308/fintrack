@@ -8,7 +8,7 @@ public interface BudgetService {
 
     Budget getBudgetById(Long budgetId);
 
-    List<Budget> getBudgetsByUserId(Long userId);
+    List<Budget> getBudgets(Long userId);
 
     boolean isMemberOfBudget(Long userId, Long budgetId);
 

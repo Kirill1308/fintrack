@@ -1,4 +1,4 @@
-INSERT INTO users (name, username, password, phone_number, date_of_birth, profile_image, gender, status, created_at,
+INSERT INTO "user" (name, username, password, phone_number, date_of_birth, profile_image, gender, status, created_at,
                    updated_at)
 VALUES ('John Doe', 'johndoe@gmail.com', '$2a$10$Xl0yhvzLIaJCDdKBS0Lld.ksK7c2Zytg/ZKFdtIYYQUv8rUfvCR4W', '123456789',
         '1990-01-05', null, 'MALE', 'ACTIVE', '2022-01-01 00:00:00', '2022-01-01 00:00:00'),

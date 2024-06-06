@@ -1,5 +1,6 @@
 package com.popov.fintrack.wallet.service;
 
+import com.popov.fintrack.user.MemberService;
 import com.popov.fintrack.user.UserService;
 import com.popov.fintrack.user.model.User;
 import com.popov.fintrack.wallet.InvitationRepository;
@@ -9,7 +10,6 @@ import com.popov.fintrack.wallet.dto.InvitationRequest;
 import com.popov.fintrack.wallet.model.Invitation;
 import com.popov.fintrack.wallet.model.InvitationStatus;
 import com.popov.fintrack.wallet.model.Wallet;
-import com.popov.fintrack.user.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

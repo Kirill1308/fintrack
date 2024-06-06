@@ -1,14 +1,14 @@
 package com.popov.fintrack.wallet.service;
 
 import com.popov.fintrack.exception.ResourceNotFoundException;
-import com.popov.fintrack.user.service.UserServiceImpl;
-import com.popov.fintrack.wallet.WalletRepository;
-import com.popov.fintrack.wallet.WalletService;
-import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.user.MemberRepository;
 import com.popov.fintrack.user.MemberService;
 import com.popov.fintrack.user.model.member.Member;
 import com.popov.fintrack.user.model.member.MemberRole;
+import com.popov.fintrack.user.service.UserServiceImpl;
+import com.popov.fintrack.wallet.WalletRepository;
+import com.popov.fintrack.wallet.WalletService;
+import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

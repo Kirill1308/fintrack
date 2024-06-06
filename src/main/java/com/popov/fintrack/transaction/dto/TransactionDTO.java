@@ -19,9 +19,6 @@ public class TransactionDTO {
     @NotNull(message = "Id cannot be null", groups = OnUpdate.class)
     private Long id;
 
-    @NotNull(message = "WalletId cannot be null")
-    private Long walletId;
-
     @NotNull(message = "Type cannot be null")
     @Pattern(regexp = "^(INCOME|EXPENSE)$", message = "Type should be either INCOME or EXPENSE")
     private String type;

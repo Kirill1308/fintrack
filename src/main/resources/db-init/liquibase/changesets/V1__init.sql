@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users
+CREATE TABLE IF NOT EXISTS "user"
 (
     id            BIGSERIAL PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users_roles
     user_id BIGINT       NOT NULL,
     role    VARCHAR(255) NOT NULL,
     PRIMARY KEY (user_id, role),
-    CONSTRAINT fk_users_roles_users FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT fk_users_roles_users FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS wallet
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS wallet_member
     user_id   BIGINT       NOT NULL,
     wallet_id BIGINT       NOT NULL,
     role      VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (user_id) REFERENCES "user" (id),
     FOREIGN KEY (wallet_id) REFERENCES wallet (id)
 );
 
@@ -65,8 +65,8 @@ CREATE TABLE invitation
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (wallet_id) REFERENCES wallet (id),
-    FOREIGN KEY (sender_id) REFERENCES users (id),
-    FOREIGN KEY (recipient_id) REFERENCES users (id)
+    FOREIGN KEY (sender_id) REFERENCES "user" (id),
+    FOREIGN KEY (recipient_id) REFERENCES "user" (id)
 );
 
 CREATE TABLE IF NOT EXISTS budget
@@ -82,5 +82,5 @@ CREATE TABLE IF NOT EXISTS budget
     end_date         DATE,
     creation_date    DATE,
     last_update_date DATE,
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES "user" (id)
 );

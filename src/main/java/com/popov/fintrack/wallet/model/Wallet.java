@@ -1,5 +1,6 @@
 package com.popov.fintrack.wallet.model;
 
+import com.popov.fintrack.transaction.model.Transaction;
 import com.popov.fintrack.user.model.member.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,8 +28,9 @@ public class Wallet implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Member> members;
 
-//    @OneToMany(mappedBy = "wallet", fetch = FetchType.EAGER)
-//    private Set<Budget> budgets;
+    @OneToMany(mappedBy = "wallet", fetch = FetchType.EAGER)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<Transaction> transactions;
 
     private String name;
     private Double balance;

@@ -1,7 +1,7 @@
 package com.popov.fintrack.wallet;
 
-import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.user.model.member.Member;
+import com.popov.fintrack.wallet.model.Wallet;
 
 import java.util.List;
 

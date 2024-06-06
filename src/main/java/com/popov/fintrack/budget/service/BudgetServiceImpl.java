@@ -41,7 +41,7 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Budget> getBudgetsByUserId(Long userId) {
+    public List<Budget> getBudgets(Long userId) {
         List<Budget> budgets = budgetRepository.findByUserId(userId);
         budgets.forEach(this::updateBudgetAmounts);
         return budgets;

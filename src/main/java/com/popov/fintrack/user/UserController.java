@@ -100,8 +100,8 @@ public class UserController {
 
     @GetMapping("/{userId}/budgets")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userId)")
-    public List<BudgetDTO> getBudgetsByUserId(@PathVariable Long userId) {
-        List<Budget> budgets = budgetService.getBudgetsByUserId(userId);
+    public List<BudgetDTO> getBudgetsBy(@PathVariable Long userId) {
+        List<Budget> budgets = budgetService.getBudgets(userId);
         return budgetMapper.toDto(budgets);
     }
 }

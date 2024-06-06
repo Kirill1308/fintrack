@@ -5,8 +5,8 @@ import com.popov.fintrack.transaction.TransactionRepository;
 import com.popov.fintrack.transaction.TransactionService;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Transaction;
+import com.popov.fintrack.user.model.member.MemberRole;
 import com.popov.fintrack.utills.SpecificationUtils;
-import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
-    private final WalletService walletService;
     private final TransactionRepository transactionRepository;
 
     @Override
@@ -61,9 +60,10 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 
-        Wallet wallet = walletService.getWalletById(transaction.getWalletId());
+        Wallet wallet = transaction.getWallet();
 
         return wallet.getMembers().stream()
-                .anyMatch(walletMember -> walletMember.getUser().getId().equals(userId) && walletMember.getRole().equals("OWNER"));
+                .anyMatch(walletMember -> walletMember.getUser().getId().equals(userId)
+                                          && walletMember.getRole().equals(MemberRole.OWNER));
     }
 }

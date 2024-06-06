@@ -4,6 +4,8 @@ import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.dto.PaginatedResponse;
 import com.popov.fintrack.transaction.dto.TransactionDTO;
 import com.popov.fintrack.transaction.model.Transaction;
+import com.popov.fintrack.wallet.WalletService;
+import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.TransactionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,10 +29,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionController {
 
+    private final WalletService walletService;
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
 
     @PostMapping
+    @PreAuthorize("@customSecurityExpression.hasAccessToWallets(#filters.walletIds)")
     public PaginatedResponse<TransactionDTO> getFilteredTransactions(
             @RequestBody FilterDTO filters,
             @RequestParam int page,
@@ -56,8 +60,19 @@ public class TransactionController {
         return transactionMapper.toDto(transaction);
     }
 
+    @PostMapping("/{walletId}")
+    @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
+    public TransactionDTO createTransaction(@PathVariable Long walletId,
+                                            @RequestBody TransactionDTO transactionDTO) {
+        Wallet wallet = walletService.getWalletById(walletId);
+        Transaction transaction = transactionMapper.toEntity(transactionDTO);
+        transaction.setWallet(wallet);
+        Transaction createdTransaction = transactionService.update(transaction);
+        return transactionMapper.toDto(createdTransaction);
+    }
+
     @PutMapping
-    @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#transactionDTO.walletId)")
+    @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionDTO.id)")
     public TransactionDTO updateTransaction(@RequestBody TransactionDTO transactionDTO) {
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         Transaction updatedTransaction = transactionService.update(transaction);

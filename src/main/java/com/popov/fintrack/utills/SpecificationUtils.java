@@ -15,14 +15,14 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpecificationUtils {
 
-    public static Specification<Transaction> buildSpecification(FilterDTO filterDTO, Type transactionType) {
+    public static Specification<Transaction> buildSpecification(FilterDTO filters, Type transactionType) {
         Specification<Transaction> spec = Specification.where(null);
 
-        spec = SpecificationUtils.applyWalletFilter(spec, filterDTO.getWalletIds());
-        spec = SpecificationUtils.applyDateRangeFilter(spec, filterDTO.getDateRange());
-        spec = SpecificationUtils.applyCategoryFilter(spec, filterDTO.getCategories());
-        spec = SpecificationUtils.applyAmountRangeFilter(spec, filterDTO.getAmountRange());
-        spec = SpecificationUtils.applyNoteFilter(spec, filterDTO.getNote());
+        spec = SpecificationUtils.applyWalletFilter(spec, filters.getWalletIds());
+        spec = SpecificationUtils.applyDateRangeFilter(spec, filters.getDateRange());
+        spec = SpecificationUtils.applyCategoryFilter(spec, filters.getCategories());
+        spec = SpecificationUtils.applyAmountRangeFilter(spec, filters.getAmountRange());
+        spec = SpecificationUtils.applyNoteFilter(spec, filters.getNote());
 
         spec = spec.and((root, query, cb) -> cb.equal(root.get("type"), transactionType.name()));
 
@@ -31,7 +31,7 @@ public final class SpecificationUtils {
 
     public static Specification<Transaction> applyWalletFilter(Specification<Transaction> spec, List<Long> walletIds) {
         if (walletIds != null && !walletIds.isEmpty()) {
-            spec = spec.and((root, query, cb) -> root.get("walletId").in(walletIds));
+            spec = spec.and((root, query, cb) -> root.get("wallet").get("id").in(walletIds));
         }
         return spec;
     }
