@@ -11,8 +11,6 @@ import java.util.List;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    List<Member> findByUserId(Long userId);
-
     List<Member> findByWalletId(Long walletId);
 
     void deleteByWalletIdAndUserId(Long walletId, Long userId);

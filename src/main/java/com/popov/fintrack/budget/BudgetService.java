@@ -10,7 +10,7 @@ public interface BudgetService {
 
     List<Budget> getBudgets(Long userId);
 
-    boolean isMemberOfBudget(Long userId, Long budgetId);
+    boolean isOwnerOfBudget(Long userId, Long budgetId);
 
     Budget createBudget(Budget budget);
 

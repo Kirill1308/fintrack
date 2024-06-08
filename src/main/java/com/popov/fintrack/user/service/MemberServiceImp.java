@@ -4,7 +4,6 @@ import com.popov.fintrack.user.MemberRepository;
 import com.popov.fintrack.user.MemberService;
 import com.popov.fintrack.user.model.User;
 import com.popov.fintrack.user.model.member.Member;
-import com.popov.fintrack.user.model.member.MemberRole;
 import com.popov.fintrack.wallet.model.Wallet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

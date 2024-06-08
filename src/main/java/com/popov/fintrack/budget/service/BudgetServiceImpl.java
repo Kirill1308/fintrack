@@ -42,15 +42,15 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public List<Budget> getBudgets(Long userId) {
-        List<Budget> budgets = budgetRepository.findByUserId(userId);
+        List<Budget> budgets = budgetRepository.findByOwnerId(userId);
         budgets.forEach(this::updateBudgetAmounts);
         return budgets;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isMemberOfBudget(Long userId, Long budgetId) {
-        return budgetRepository.existsByIdAndUserId(budgetId, userId);
+    public boolean isOwnerOfBudget(Long userId, Long budgetId) {
+        return budgetRepository.existsByIdAndOwnerId(budgetId, userId);
     }
 
     @Override
@@ -76,9 +76,6 @@ public class BudgetServiceImpl implements BudgetService {
 
     private void updateBudgetAmounts(Budget budget) {
         FilterDTO filters = createFilterFromBudget(budget);
-        List<Long> walletIds = walletService.getWallets(SecurityUtils.getAuthenticatedUserId())
-                .stream().map(Wallet::getId).toList();
-        filters.setWalletIds(walletIds);
 
         Double totalAmountSpent = expenseService.getTotalFilteredExpenses(filters);
         double remainingAmount = budget.getBudgetedAmount() - totalAmountSpent;
@@ -98,10 +95,13 @@ public class BudgetServiceImpl implements BudgetService {
 
     private FilterDTO createFilterFromBudget(Budget budget) {
         FilterDTO filters = new FilterDTO();
+        List<Long> walletIds = walletService.getWallets(SecurityUtils.getAuthenticatedUserId())
+                .stream().map(Wallet::getId).toList();
         DateRange dateRange = new DateRange();
         dateRange.setStartDate(budget.getStartDate());
         dateRange.setEndDate(budget.getEndDate());
 
+        filters.setWalletIds(walletIds);
         filters.setDateRange(dateRange);
         filters.setCategories(List.of(budget.getCategory()));
         return filters;

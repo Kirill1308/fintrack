@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS wallet
 CREATE TABLE IF NOT EXISTS wallet_member
 (
     id        BIGSERIAL PRIMARY KEY,
-    user_id   BIGINT       NOT NULL,
-    wallet_id BIGINT       NOT NULL,
+    user_id   BIGINT NOT NULL,
+    wallet_id BIGINT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (wallet_id) REFERENCES wallet (id)
 );

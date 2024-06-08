@@ -62,14 +62,6 @@ public class WalletServiceImpl implements WalletService {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         wallet.setOwner(userService.getUserById(userId));
         return walletRepository.save(wallet);
-
-
-//        Member member = new Member();
-//        member.setUser(userService.getUserById(userId));
-//        member.setWallet(savedWallet);
-//        member.setRole(MemberRole.OWNER);
-//        memberRepository.save(member);
-
     }
 
     @Override

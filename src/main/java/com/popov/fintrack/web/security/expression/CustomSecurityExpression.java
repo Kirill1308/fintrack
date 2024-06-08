@@ -39,7 +39,7 @@ public class CustomSecurityExpression {
 
     public boolean hasAccessToBudget(Long budgetId) {
         Long userId = getAuthenticatedUserId();
-        return budgetService.isMemberOfBudget(userId, budgetId);
+        return budgetService.isOwnerOfBudget(userId, budgetId);
     }
 
     private boolean hasAnyRole(final Role... roles) {
