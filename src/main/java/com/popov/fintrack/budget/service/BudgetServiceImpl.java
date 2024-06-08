@@ -9,7 +9,7 @@ import com.popov.fintrack.report.service.ExpenseService;
 import com.popov.fintrack.transaction.dto.DateRange;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.user.UserService;
-import com.popov.fintrack.wallet.WalletService;
+import com.popov.fintrack.wallet.WalletRepository;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,10 +25,10 @@ import java.util.List;
 public class BudgetServiceImpl implements BudgetService {
 
     private final UserService userService;
-    private final WalletService walletService;
     private final ExpenseService expenseService;
 
     private final BudgetRepository budgetRepository;
+    private final WalletRepository walletRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -42,9 +43,32 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public List<Budget> getBudgets(Long userId) {
-        List<Budget> budgets = budgetRepository.findByOwnerId(userId);
+        List<Budget> ownedBudgets = getOwnedBudgets(userId);
+        List<Budget> memberBudgets = getMemberBudgets(userId);
+
+        List<Budget> budgets = new ArrayList<>();
+        budgets.addAll(ownedBudgets);
+        budgets.addAll(memberBudgets);
+
         budgets.forEach(this::updateBudgetAmounts);
+
         return budgets;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Budget> getOwnedBudgets(Long userId) {
+        return budgetRepository.findByOwnerId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Budget> getMemberBudgets(Long userId) {
+        List<Wallet> memberWallets = walletRepository.findByMembersUserId(userId);
+
+        return memberWallets.stream()
+                .flatMap(wallet -> wallet.getBudgets().stream())
+                .toList();
     }
 
     @Override
@@ -55,16 +79,10 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     @Transactional
-    public Budget createBudget(Budget budget) {
+    public Budget updateBudget(Budget budget) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         budget.setOwner(userService.getUserById(userId));
-        budget.setStatus(BudgetStatus.ACTIVE);
-        return budgetRepository.save(budget);
-    }
 
-    @Override
-    @Transactional
-    public Budget updateBudget(Budget budget) {
         return budgetRepository.save(budget);
     }
 
@@ -95,8 +113,9 @@ public class BudgetServiceImpl implements BudgetService {
 
     private FilterDTO createFilterFromBudget(Budget budget) {
         FilterDTO filters = new FilterDTO();
-        List<Long> walletIds = walletService.getWallets(SecurityUtils.getAuthenticatedUserId())
-                .stream().map(Wallet::getId).toList();
+        List<Long> walletIds = budget.getWallets().stream()
+                .map(Wallet::getId)
+                .toList();
         DateRange dateRange = new DateRange();
         dateRange.setStartDate(budget.getStartDate());
         dateRange.setEndDate(budget.getEndDate());

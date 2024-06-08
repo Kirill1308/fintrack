@@ -10,9 +10,11 @@ public interface BudgetService {
 
     List<Budget> getBudgets(Long userId);
 
-    boolean isOwnerOfBudget(Long userId, Long budgetId);
+    List<Budget> getOwnedBudgets(Long userId);
 
-    Budget createBudget(Budget budget);
+    List<Budget> getMemberBudgets(Long userId);
+
+    boolean isOwnerOfBudget(Long userId, Long budgetId);
 
     Budget updateBudget(Budget budget);
 

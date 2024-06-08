@@ -85,4 +85,10 @@ public class WalletServiceImpl implements WalletService {
     public boolean isOwnerOfWallet(Long userId, Long walletId) {
         return walletRepository.existsByOwner_IdAndId(userId, walletId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Wallet> getWalletsByIds(List<Long> walletIds) {
+        return walletRepository.findByIdIn(walletIds);
+    }
 }

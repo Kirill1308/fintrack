@@ -18,6 +18,7 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
     boolean existsByOwner_IdAndId(Long userId, Long walletId);
 
-    @Query("SELECT wm.wallet FROM Member wm WHERE wm.user.id = :userId")
-    List<Wallet> findSharedWallets(Long userId);
+    List<Wallet> findByIdIn(List<Long> walletIds);
+
+    List<Wallet> findByMembersUserId(Long userId);
 }

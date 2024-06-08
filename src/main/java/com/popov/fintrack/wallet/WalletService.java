@@ -22,4 +22,6 @@ public interface WalletService {
     void deleteWallet(Long id);
 
     boolean isOwnerOfWallet(Long userId, Long walletId);
+
+    List<Wallet> getWalletsByIds(List<Long> walletIds);
 }

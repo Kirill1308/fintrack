@@ -20,6 +20,9 @@ VALUES (1, 'John Wallet', 1000.00, 'USD'),
        (2, 'Mike Wallet', 5000.00, 'USD'),
        (3, 'Kirill Wallet', 1500.00, 'USD');
 
+INSERT INTO wallet_member (user_id, wallet_id)
+VALUES (3, 1);
+
 INSERT INTO transaction (user_id, wallet_id, type, category, payment, amount, currency, note, date_created,
                          date_updated)
 VALUES
@@ -149,3 +152,8 @@ VALUES (1, 'Food Budget', 500.00, 'USD', 'FOOD', 'ACTIVE', '2023-01-01', '2023-1
         '2023-01-01'),
        (3, 'Education Budget', 1000.00, 'USD', 'EDUCATION', 'ACTIVE', '2023-01-01', '2023-12-31', '2023-01-01',
         '2023-01-01');
+
+INSERT INTO budget_wallet (budget_id, wallet_id)
+VALUES (1, 1),
+       (2, 2),
+       (3, 3);

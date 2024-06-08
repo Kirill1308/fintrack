@@ -4,6 +4,8 @@ import com.popov.fintrack.budget.dto.BudgetDTO;
 import com.popov.fintrack.budget.model.Budget;
 import com.popov.fintrack.utills.validation.OnCreate;
 import com.popov.fintrack.utills.validation.OnUpdate;
+import com.popov.fintrack.wallet.WalletService;
+import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.BudgetMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,12 +19,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/budgets")
 public class BudgetController {
 
     private final BudgetService budgetService;
+    private final WalletService walletService;
     private final BudgetMapper budgetMapper;
 
     @GetMapping("/{budgetId}")
@@ -36,7 +41,10 @@ public class BudgetController {
     public BudgetDTO createBudget(final @Validated(OnCreate.class)
                                   @RequestBody BudgetDTO budgetDTO) {
         Budget budget = budgetMapper.toEntity(budgetDTO);
-        Budget createdBudget = budgetService.createBudget(budget);
+        List<Wallet> wallets = walletService.getWalletsByIds(budgetDTO.getWalletIds());
+        budget.setWallets(wallets);
+
+        Budget createdBudget = budgetService.updateBudget(budget);
         return budgetMapper.toDto(createdBudget);
     }
 

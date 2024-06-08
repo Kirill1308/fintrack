@@ -10,12 +10,16 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class BudgetDTO {
 
     @NotNull(message = "Id cannot be null", groups = {OnUpdate.class})
     private Long id;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<Long> walletIds;
 
     @NotNull(message = "Name cannot be null")
     @Size(max = 255, message = "Name must be less than 255 characters")
@@ -26,16 +30,16 @@ public class BudgetDTO {
     private Double budgetedAmount;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Double spentAmount;
+    private Double spentAmount = 0.0;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Double remainingAmount;
+    private Double remainingAmount = 0.0;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Double availableAmountPerDay;
+    private Double availableAmountPerDay = 0.0;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private BudgetStatus status;
+    private BudgetStatus status = BudgetStatus.ACTIVE;
 
     @NotNull(message = "Currency cannot be null")
     @Size(max = 255, message = "Currency must be less than 255 characters")
