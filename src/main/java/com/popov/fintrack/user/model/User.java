@@ -10,6 +10,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 public class User implements Serializable {

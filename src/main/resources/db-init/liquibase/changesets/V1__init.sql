@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "user"
+CREATE TABLE IF NOT EXISTS users
 (
     id            BIGSERIAL PRIMARY KEY,
     name          VARCHAR(255) NOT NULL,
@@ -18,15 +18,17 @@ CREATE TABLE IF NOT EXISTS users_roles
     user_id BIGINT       NOT NULL,
     role    VARCHAR(255) NOT NULL,
     PRIMARY KEY (user_id, role),
-    CONSTRAINT fk_users_roles_users FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE NO ACTION
+    CONSTRAINT fk_users_roles_users FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS wallet
 (
     id       BIGSERIAL PRIMARY KEY,
+    user_id  BIGINT,
     name     VARCHAR(255),
     balance  DOUBLE PRECISION,
-    currency VARCHAR(3)
+    currency VARCHAR(3),
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE IF NOT EXISTS wallet_member
@@ -34,14 +36,14 @@ CREATE TABLE IF NOT EXISTS wallet_member
     id        BIGSERIAL PRIMARY KEY,
     user_id   BIGINT       NOT NULL,
     wallet_id BIGINT       NOT NULL,
-    role      VARCHAR(255) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES "user" (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (wallet_id) REFERENCES wallet (id)
 );
 
 CREATE TABLE IF NOT EXISTS transaction
 (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id      BIGINT NOT NULL,
     wallet_id    BIGINT NOT NULL,
     type         VARCHAR(255),
     category     VARCHAR(255),
@@ -51,6 +53,7 @@ CREATE TABLE IF NOT EXISTS transaction
     note         TEXT,
     date_created TIMESTAMP,
     date_updated TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (wallet_id) REFERENCES wallet (id)
 );
 
@@ -65,8 +68,8 @@ CREATE TABLE invitation
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (wallet_id) REFERENCES wallet (id),
-    FOREIGN KEY (sender_id) REFERENCES "user" (id),
-    FOREIGN KEY (recipient_id) REFERENCES "user" (id)
+    FOREIGN KEY (sender_id) REFERENCES users (id),
+    FOREIGN KEY (recipient_id) REFERENCES users (id)
 );
 
 CREATE TABLE IF NOT EXISTS budget
@@ -82,5 +85,5 @@ CREATE TABLE IF NOT EXISTS budget
     end_date         DATE,
     creation_date    DATE,
     last_update_date DATE,
-    FOREIGN KEY (user_id) REFERENCES "user" (id)
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );

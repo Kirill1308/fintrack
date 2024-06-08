@@ -57,7 +57,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Transactional
     public Budget createBudget(Budget budget) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
-        budget.setUser(userService.getUserById(userId));
+        budget.setOwner(userService.getUserById(userId));
         budget.setStatus(BudgetStatus.ACTIVE);
         return budgetRepository.save(budget);
     }

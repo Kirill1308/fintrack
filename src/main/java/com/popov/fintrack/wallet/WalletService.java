@@ -15,9 +15,11 @@ public interface WalletService {
 
     boolean isMemberOfWallet(Long userId, Long walletId);
 
+    Wallet createWallet(Wallet wallet);
+
     Wallet updateWallet(Wallet wallet);
 
     void deleteWallet(Long id);
 
-    Wallet createWallet(Wallet wallet);
+    boolean isOwnerOfWallet(Long userId, Long walletId);
 }

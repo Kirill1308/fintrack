@@ -15,4 +15,9 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
     @Query("SELECT COUNT(wm) > 0 FROM Member wm WHERE wm.user.id = :userId AND wm.wallet.id = :walletId")
     boolean existsByUserIdAndId(Long userId, Long walletId);
+
+    @Query("SELECT w FROM Wallet w WHERE w.owner.id = :userId")
+    List<Wallet> findOwnedWallets(Long userId);
+
+    boolean existsByOwner_IdAndId(Long userId, Long walletId);
 }

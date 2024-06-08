@@ -30,7 +30,6 @@ public class MemberServiceImp implements MemberService {
         Member member = new Member();
         member.setWallet(wallet);
         member.setUser(recipient);
-        member.setRole(MemberRole.MEMBER);
         memberRepository.save(member);
     }
 

@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class FilterDTO {
+    private List<Long> userIds;
     private List<Long> walletIds;
     private List<Category> categories;
     private DateRange dateRange;

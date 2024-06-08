@@ -3,8 +3,6 @@ package com.popov.fintrack.user.model.member;
 import com.popov.fintrack.user.model.User;
 import com.popov.fintrack.wallet.model.Wallet;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +30,4 @@ public class Member implements Serializable {
     @ManyToOne
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
-
-    @Enumerated(EnumType.STRING)
-    private MemberRole role;
 }

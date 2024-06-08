@@ -18,14 +18,24 @@ public final class SpecificationUtils {
     public static Specification<Transaction> buildSpecification(FilterDTO filters, Type transactionType) {
         Specification<Transaction> spec = Specification.where(null);
 
+        spec = SpecificationUtils.applyUserFilter(spec, filters.getUserIds());
         spec = SpecificationUtils.applyWalletFilter(spec, filters.getWalletIds());
         spec = SpecificationUtils.applyDateRangeFilter(spec, filters.getDateRange());
         spec = SpecificationUtils.applyCategoryFilter(spec, filters.getCategories());
         spec = SpecificationUtils.applyAmountRangeFilter(spec, filters.getAmountRange());
         spec = SpecificationUtils.applyNoteFilter(spec, filters.getNote());
 
-        spec = spec.and((root, query, cb) -> cb.equal(root.get("type"), transactionType.name()));
+        if (transactionType != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("type"), transactionType.name()));
+        }
 
+        return spec;
+    }
+
+    public static Specification<Transaction> applyUserFilter(Specification<Transaction> spec, List<Long> userIds) {
+        if (userIds != null && !userIds.isEmpty()) {
+            spec = spec.and((root, query, cb) -> root.get("owner").get("id").in(userIds));
+        }
         return spec;
     }
 

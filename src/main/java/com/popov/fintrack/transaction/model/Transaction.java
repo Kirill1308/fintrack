@@ -1,5 +1,6 @@
 package com.popov.fintrack.transaction.model;
 
+import com.popov.fintrack.user.model.User;
 import com.popov.fintrack.wallet.model.Wallet;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,6 +22,10 @@ public class Transaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User owner;
 
     @ManyToOne
     @JoinColumn(name = "wallet_id")

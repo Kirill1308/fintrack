@@ -5,9 +5,10 @@ import com.popov.fintrack.transaction.TransactionRepository;
 import com.popov.fintrack.transaction.TransactionService;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Transaction;
-import com.popov.fintrack.user.model.member.MemberRole;
+import com.popov.fintrack.user.model.User;
+import com.popov.fintrack.user.service.UserServiceImpl;
 import com.popov.fintrack.utills.SpecificationUtils;
-import com.popov.fintrack.wallet.model.Wallet;
+import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,19 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
+    private final UserServiceImpl userService;
     private final TransactionRepository transactionRepository;
 
     @Override
     @Transactional(readOnly = true)
     public Page<Transaction> getFilteredTransactions(FilterDTO filters, Pageable pageable) {
-        Specification<Transaction> spec = Specification.where(null);
-
-        spec = SpecificationUtils.applyWalletFilter(spec, filters.getWalletIds());
-        spec = SpecificationUtils.applyCategoryFilter(spec, filters.getCategories());
-        spec = SpecificationUtils.applyDateRangeFilter(spec, filters.getDateRange());
-        spec = SpecificationUtils.applyAmountRangeFilter(spec, filters.getAmountRange());
-        spec = SpecificationUtils.applyNoteFilter(spec, filters.getNote());
-
+        Specification<Transaction> spec = SpecificationUtils.buildSpecification(filters, null);
         return transactionRepository.findAll(spec, pageable);
     }
 
@@ -40,6 +35,15 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction getTransaction(Long id) {
         return transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
+    }
+
+    @Override
+    @Transactional
+    public Transaction create(Transaction transaction) {
+        Long userId = SecurityUtils.getAuthenticatedUserId();
+        User user = userService.getUserById(userId);
+        transaction.setOwner(user);
+        return transactionRepository.save(transaction);
     }
 
     @Override
@@ -60,10 +64,6 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 
-        Wallet wallet = transaction.getWallet();
-
-        return wallet.getMembers().stream()
-                .anyMatch(walletMember -> walletMember.getUser().getId().equals(userId)
-                                          && walletMember.getRole().equals(MemberRole.OWNER));
+        return transaction.getOwner().getId().equals(userId);
     }
 }

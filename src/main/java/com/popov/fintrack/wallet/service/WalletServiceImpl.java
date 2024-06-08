@@ -3,9 +3,8 @@ package com.popov.fintrack.wallet.service;
 import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.user.MemberRepository;
 import com.popov.fintrack.user.MemberService;
+import com.popov.fintrack.user.UserService;
 import com.popov.fintrack.user.model.member.Member;
-import com.popov.fintrack.user.model.member.MemberRole;
-import com.popov.fintrack.user.service.UserServiceImpl;
 import com.popov.fintrack.wallet.WalletRepository;
 import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
@@ -14,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,7 +23,7 @@ public class WalletServiceImpl implements WalletService {
     private final WalletRepository walletRepository;
     private final MemberService memberService;
     private final MemberRepository memberRepository;
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,7 +35,14 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional(readOnly = true)
     public List<Wallet> getWallets(Long userId) {
-        return walletRepository.findAllByUserId(userId);
+        List<Wallet> ownedWallets = walletRepository.findOwnedWallets(userId);
+        List<Wallet> sharedWallets = memberRepository.findSharedWallets(userId);
+
+        List<Wallet> wallets = new ArrayList<>();
+        wallets.addAll(ownedWallets);
+        wallets.addAll(sharedWallets);
+
+        return wallets;
     }
 
     @Override
@@ -52,16 +59,17 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public Wallet createWallet(Wallet wallet) {
-        Wallet savedWallet = walletRepository.save(wallet);
         Long userId = SecurityUtils.getAuthenticatedUserId();
+        wallet.setOwner(userService.getUserById(userId));
+        return walletRepository.save(wallet);
 
-        Member member = new Member();
-        member.setUser(userService.getUserById(userId));
-        member.setWallet(savedWallet);
-        member.setRole(MemberRole.OWNER);
-        memberRepository.save(member);
 
-        return savedWallet;
+//        Member member = new Member();
+//        member.setUser(userService.getUserById(userId));
+//        member.setWallet(savedWallet);
+//        member.setRole(MemberRole.OWNER);
+//        memberRepository.save(member);
+
     }
 
     @Override
@@ -77,7 +85,12 @@ public class WalletServiceImpl implements WalletService {
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet not found"));
 
         memberRepository.deleteAll(wallet.getMembers());
-
         walletRepository.delete(wallet);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isOwnerOfWallet(Long userId, Long walletId) {
+        return walletRepository.existsByOwner_IdAndId(userId, walletId);
     }
 }

@@ -55,7 +55,7 @@ public class TransactionController {
 
     @GetMapping("/{transactionId}")
     @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionId)")
-    public TransactionDTO getByTransactionById(@PathVariable Long transactionId) {
+    public TransactionDTO getTransactionById(@PathVariable Long transactionId) {
         Transaction transaction = transactionService.getTransaction(transactionId);
         return transactionMapper.toDto(transaction);
     }
@@ -67,7 +67,7 @@ public class TransactionController {
         Wallet wallet = walletService.getWalletById(walletId);
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         transaction.setWallet(wallet);
-        Transaction createdTransaction = transactionService.update(transaction);
+        Transaction createdTransaction = transactionService.create(transaction);
         return transactionMapper.toDto(createdTransaction);
     }
 

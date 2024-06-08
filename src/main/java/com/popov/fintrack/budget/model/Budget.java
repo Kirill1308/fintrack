@@ -27,7 +27,7 @@ public class Budget implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User owner;
 
     private String name;
     private Double budgetedAmount;

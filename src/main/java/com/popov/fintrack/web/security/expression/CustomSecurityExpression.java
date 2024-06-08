@@ -28,7 +28,9 @@ public class CustomSecurityExpression {
 
     public boolean hasAccessToWallet(Long walletId) {
         Long userId = getAuthenticatedUserId();
-        return walletService.isMemberOfWallet(userId, walletId);
+        boolean isOwner = walletService.isOwnerOfWallet(userId, walletId);
+        boolean isMember = walletService.isMemberOfWallet(userId, walletId);
+        return isOwner || isMember;
     }
 
     public boolean hasAccessToWallets(List<Long> walletIds) {
