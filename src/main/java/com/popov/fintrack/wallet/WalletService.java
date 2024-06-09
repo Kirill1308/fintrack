@@ -24,4 +24,6 @@ public interface WalletService {
     boolean isOwnerOfWallet(Long userId, Long walletId);
 
     List<Wallet> getWalletsByIds(List<Long> walletIds);
+
+    List<Wallet> getMemberWallets(Long userId);
 }

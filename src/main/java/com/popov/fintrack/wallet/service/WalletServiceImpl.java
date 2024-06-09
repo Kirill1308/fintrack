@@ -52,6 +52,12 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Wallet> getMemberWallets(Long userId) {
+        return walletRepository.findByMembersUserId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public boolean isMemberOfWallet(Long userId, Long walletId) {
         return walletRepository.existsByUserIdAndId(userId, walletId);
     }

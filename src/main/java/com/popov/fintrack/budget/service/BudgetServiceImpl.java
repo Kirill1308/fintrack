@@ -9,7 +9,7 @@ import com.popov.fintrack.report.service.ExpenseService;
 import com.popov.fintrack.transaction.dto.DateRange;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.user.UserService;
-import com.popov.fintrack.wallet.WalletRepository;
+import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,10 @@ import java.util.List;
 public class BudgetServiceImpl implements BudgetService {
 
     private final UserService userService;
+    private final WalletService walletService;
     private final ExpenseService expenseService;
 
     private final BudgetRepository budgetRepository;
-    private final WalletRepository walletRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -64,7 +64,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public List<Budget> getMemberBudgets(Long userId) {
-        List<Wallet> memberWallets = walletRepository.findByMembersUserId(userId);
+        List<Wallet> memberWallets = walletService.getMemberWallets(userId);
 
         return memberWallets.stream()
                 .flatMap(wallet -> wallet.getBudgets().stream())

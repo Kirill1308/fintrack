@@ -1,15 +1,51 @@
 package com.popov.fintrack.transaction.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum Category {
-    //Expense
-    FOOD, TRANSPORT, ENTERTAINMENT, UTILITIES, SHOPPING,
-    HEALTH, HOME, BILLS_AND_FEES, CAR, TRAVEL, EDUCATION,
-    CLOTHING, SPORT, GIFTS, CHARITY, RENT, SUBSCRIPTION,
+    // Expense Categories
+    FOOD("Food"),
+    GROCERIES("Groceries"),
+    TRANSPORT("Transport"),
+    ENTERTAINMENT("Entertainment"),
+    UTILITIES("Utilities"),
+    SHOPPING("Shopping"),
+    HEALTH("Health"),
+    HOME("Home"),
+    BILLS_AND_FEES("Bills and Fees"),
+    CAR("Car"),
+    TRAVEL("Travel"),
+    EDUCATION("Education"),
+    CLOTHING("Clothing"),
+    SPORT("Sport"),
+    GIFTS("Gifts"),
+    CHARITY("Charity"),
+    RENT("Rent"),
+    SUBSCRIPTION("Subscription"),
 
-    //Income
-    SALARY, FREELANCE, SALES, BONUS, DIVIDENDS, INTEREST, REFUND,
-    LOAN, INVESTMENT, PENSION, INSURANCE, CHILD_SUPPORT, ALIMONY,
-    GOVERNMENT_BENEFITS, OTHER_INCOME, BANK_TRANSFER,
+    // Income Categories
+    SALARY("Salary"),
+    FREELANCE("Freelance"),
+    SALES("Sales"),
+    BONUS("Bonus"),
+    DIVIDENDS("Dividends"),
+    INTEREST("Interest"),
+    REFUND("Refund"),
+    LOAN("Loan"),
+    INVESTMENT("Investment"),
+    PENSION("Pension"),
+    INSURANCE("Insurance"),
+    CHILD_SUPPORT("Child Support"),
+    ALIMONY("Alimony"),
+    GOVERNMENT_BENEFITS("Government Benefits"),
+    OTHER_INCOME("Other Income"),
+    BANK_TRANSFER("Bank Transfer"),
 
-    OTHER
+    OTHER("Other");
+
+    private final String displayName;
 }
+

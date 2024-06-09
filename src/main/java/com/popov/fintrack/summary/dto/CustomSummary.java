@@ -10,6 +10,7 @@ import java.util.Map;
 @Data
 @Builder
 public class CustomSummary {
+    private final Long walletId;
     private final LocalDate startDate;
     private final LocalDate endDate;
     private final Double totalExpenses;

@@ -5,4 +5,5 @@ import com.popov.fintrack.budget.model.Budget;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface BudgetMapper extends Mappable<Budget, BudgetDTO> {}
+public interface BudgetMapper extends Mappable<Budget, BudgetDTO> {
+}

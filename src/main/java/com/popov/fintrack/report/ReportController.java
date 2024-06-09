@@ -52,8 +52,8 @@ public class ReportController {
     }
 
     private void validateFormat(String format) {
-        if (!format.equalsIgnoreCase("pdf") && !format.equalsIgnoreCase("xlsx") && !format.equalsIgnoreCase("csv")) {
-            throw new IllegalArgumentException("Invalid report format. Must be 'pdf', 'xlsx', or 'csv'.");
+        if (!format.equalsIgnoreCase("pdf") && !format.equalsIgnoreCase("xlsx")) {
+            throw new IllegalArgumentException("Invalid report format. Must be 'pdf', 'xlsx'.");
         }
     }
 
@@ -68,7 +68,6 @@ public class ReportController {
         return switch (format.toLowerCase()) {
             case "pdf" -> MediaType.APPLICATION_PDF;
             case "xlsx" -> new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            case "csv" -> new MediaType("text", "csv");
             default -> throw new UnsupportedOperationException("Unsupported report format.");
         };
     }

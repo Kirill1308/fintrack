@@ -49,6 +49,7 @@ public class SummaryDataFetcher {
         Map<Category, Double> incomePerCategory = incomeService.getIncomePerCategory(filters);
 
         return CustomSummary.builder()
+                .walletId(filters.getWalletIds().get(0))
                 .startDate(filters.getDateRange().getStartDate())
                 .endDate(filters.getDateRange().getEndDate())
                 .totalExpenses(totalExpenses)
@@ -81,6 +82,7 @@ public class SummaryDataFetcher {
 
         return YearlySummary.builder()
                 .year(year)
+                .walletId(walletId)
                 .totalExpenses(totalExpenses)
                 .mostExpensiveMonth(mostExpensiveMonth)
                 .leastExpensiveMonth(leastExpensiveMonth)
@@ -109,6 +111,7 @@ public class SummaryDataFetcher {
         return MonthlySummary.builder()
                 .year(year)
                 .month(month)
+                .walletId(walletId)
                 .totalExpenses(totalExpenses)
                 .totalIncome(totalIncome)
                 .averageDailyExpense(averageDailyExpense)

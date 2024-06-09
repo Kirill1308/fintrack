@@ -10,6 +10,7 @@ import java.time.Month;
 public class MonthlySummary {
     private final int year;
     private final Month month;
+    private final long walletId;
     private final Double totalExpenses;
     private final Double totalIncome;
     private final Double averageDailyExpense;

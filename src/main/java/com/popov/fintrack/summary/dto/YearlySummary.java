@@ -11,6 +11,7 @@ import java.util.Map;
 @Builder
 public class YearlySummary {
     private int year;
+    private long walletId;
     private final Double totalExpenses;
     private final Month mostExpensiveMonth;
     private final Month leastExpensiveMonth;
