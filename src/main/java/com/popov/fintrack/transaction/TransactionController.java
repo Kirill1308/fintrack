@@ -7,6 +7,12 @@ import com.popov.fintrack.transaction.model.Transaction;
 import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.TransactionMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
+@Tag(name = "Transaction Controller", description = "API for managing transactions")
 public class TransactionController {
 
     private final WalletService walletService;
@@ -35,10 +42,13 @@ public class TransactionController {
 
     @PostMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToWallets(#filters.walletIds)")
+    @Operation(summary = "Get filtered transactions", description = "Retrieve transactions based on filters and pagination parameters")
+    @ApiResponse(responseCode = "200", description = "Successful retrieval of transactions",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PaginatedResponse.class)))
     public PaginatedResponse<TransactionDTO> getFilteredTransactions(
-            @RequestBody FilterDTO filters,
-            @RequestParam int page,
-            @RequestParam int limit) {
+            @RequestBody @Parameter(description = "Filter criteria for transactions") FilterDTO filters,
+            @RequestParam @Parameter(description = "Page number for pagination") int page,
+            @RequestParam @Parameter(description = "Page size for pagination") int limit) {
 
         Pageable pageable = PageRequest.of(page, limit);
 
@@ -55,33 +65,44 @@ public class TransactionController {
 
     @GetMapping("/{transactionId}")
     @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionId)")
-    public TransactionDTO getTransactionById(@PathVariable Long transactionId) {
+    @Operation(summary = "Get transaction by ID", description = "Retrieve a transaction by its ID")
+    @ApiResponse(responseCode = "200", description = "Successful retrieval of transaction",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDTO.class)))
+    public TransactionDTO getTransactionById(@PathVariable @Parameter(description = "ID of the transaction to retrieve") Long transactionId) {
         Transaction transaction = transactionService.getTransaction(transactionId);
         return transactionMapper.toDto(transaction);
     }
 
     @PostMapping("/{walletId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
-    public TransactionDTO createTransaction(@PathVariable Long walletId,
-                                            @RequestBody TransactionDTO transactionDTO) {
+    @Operation(summary = "Create a new transaction", description = "Create a new transaction for a specific wallet")
+    @ApiResponse(responseCode = "201", description = "Successful creation of transaction",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDTO.class)))
+    public TransactionDTO createTransaction(@PathVariable @Parameter(description = "ID of the wallet to create the transaction for") Long walletId,
+                                            @RequestBody @Parameter(description = "Transaction details") TransactionDTO transactionDTO) {
         Wallet wallet = walletService.getWalletById(walletId);
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         transaction.setWallet(wallet);
-        Transaction createdTransaction = transactionService.create(transaction);
+        Transaction createdTransaction = transactionService.createTransaction(transaction);
         return transactionMapper.toDto(createdTransaction);
     }
 
     @PutMapping
     @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionDTO.id)")
-    public TransactionDTO updateTransaction(@RequestBody TransactionDTO transactionDTO) {
+    @Operation(summary = "Update a transaction", description = "Update an existing transaction")
+    @ApiResponse(responseCode = "200", description = "Successful update of transaction",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionDTO.class)))
+    public TransactionDTO updateTransaction(@RequestBody @Parameter(description = "Updated transaction details") TransactionDTO transactionDTO) {
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
-        Transaction updatedTransaction = transactionService.update(transaction);
+        Transaction updatedTransaction = transactionService.updateTransaction(transaction);
         return transactionMapper.toDto(updatedTransaction);
     }
 
     @DeleteMapping("/{transactionId}")
     @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionId)")
-    public void deleteTransaction(@PathVariable Long transactionId) {
+    @Operation(summary = "Delete a transaction", description = "Delete a transaction by its ID")
+    @ApiResponse(responseCode = "204", description = "Successful deletion of transaction")
+    public void deleteTransaction(@PathVariable @Parameter(description = "ID of the transaction to delete") Long transactionId) {
         transactionService.deleteTransaction(transactionId);
     }
 }

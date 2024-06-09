@@ -17,6 +17,8 @@ import com.popov.fintrack.web.mapper.ProfileImageMapper;
 import com.popov.fintrack.web.mapper.UserMapper;
 import com.popov.fintrack.web.mapper.WalletMapper;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -35,6 +37,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name = "User Controller", description = "API related to user management")
 public class UserController {
 
     private final UserService userService;
@@ -48,26 +51,30 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userDTO.id)")
-    public UserDTO update(final @Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
+    @Operation(summary = "Update user details", description = "Updates the details of an existing user")
+    public UserDTO update(@Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
-        User updatedUser = userService.update(user);
+        User updatedUser = userService.updateUser(user);
         return userMapper.toDto(updatedUser);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#id)")
-    public UserDTO getById(final @PathVariable Long id) {
+    @Operation(summary = "Get user details", description = "Retrieves the details of a user by ID")
+    public UserDTO getById(@PathVariable Long id) {
         User user = userService.getUserById(id);
         return userMapper.toDto(user);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#id)")
-    public void deleteById(final @PathVariable Long id) {
+    @Operation(summary = "Delete user", description = "Deletes a user by ID")
+    public void deleteById(@PathVariable Long id) {
         userService.deleteUserById(id);
     }
 
     @PostMapping("/image")
+    @Operation(summary = "Upload profile image", description = "Uploads a new profile image for the authenticated user")
     public void uploadImage(@Validated @ModelAttribute ProfileImageDTO profileImageDTO) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         if (userService.getUserById(userId).getFile() != null) {
@@ -78,6 +85,7 @@ public class UserController {
     }
 
     @PutMapping("/image")
+    @Operation(summary = "Update profile image", description = "Updates the profile image for the authenticated user")
     public void updateImage(@Validated @ModelAttribute ProfileImageDTO profileImageDTO) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
 
@@ -86,6 +94,7 @@ public class UserController {
     }
 
     @DeleteMapping("/image")
+    @Operation(summary = "Delete profile image", description = "Deletes the profile image of the authenticated user")
     public void deleteImage() {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         userService.deleteProfileImage(userId);
@@ -93,6 +102,7 @@ public class UserController {
 
     @GetMapping("/{userId}/wallets")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userId)")
+    @Operation(summary = "Get user wallets", description = "Retrieves the wallets associated with a user by user ID")
     public List<WalletDTO> getWallets(@PathVariable Long userId) {
         List<Wallet> wallets = walletService.getWallets(userId);
         return walletMapper.toDto(wallets);
@@ -100,6 +110,7 @@ public class UserController {
 
     @GetMapping("/{userId}/budgets")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userId)")
+    @Operation(summary = "Get user budgets", description = "Retrieves the budgets associated with a user by user ID")
     public List<BudgetDTO> getBudgetsByUserId(@PathVariable Long userId) {
         List<Budget> budgets = budgetService.getBudgets(userId);
         return budgetMapper.toDto(budgets);

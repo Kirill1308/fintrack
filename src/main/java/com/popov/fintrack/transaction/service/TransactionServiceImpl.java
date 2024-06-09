@@ -39,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public Transaction create(Transaction transaction) {
+    public Transaction createTransaction(Transaction transaction) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         User user = userService.getUserById(userId);
         transaction.setOwner(user);
@@ -48,7 +48,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public Transaction update(Transaction transaction) {
+    public Transaction updateTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 

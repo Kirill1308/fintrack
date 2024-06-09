@@ -7,6 +7,9 @@ import com.popov.fintrack.utills.validation.OnUpdate;
 import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.BudgetMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -24,22 +27,28 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/budgets")
+@Tag(name = "Budget Controller", description = "API for managing budgets")
 public class BudgetController {
 
     private final BudgetService budgetService;
     private final WalletService walletService;
     private final BudgetMapper budgetMapper;
 
+    @Operation(summary = "Get Budget by ID", description = "Get details of a budget by its ID")
     @GetMapping("/{budgetId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetId)")
-    public BudgetDTO getBudgetById(@PathVariable Long budgetId) {
+    public BudgetDTO getBudgetById(
+            @Parameter(description = "ID of the budget to retrieve", required = true)
+            @PathVariable Long budgetId) {
         Budget budget = budgetService.getBudgetById(budgetId);
         return budgetMapper.toDto(budget);
     }
 
+    @Operation(summary = "Create a new Budget", description = "Create a new budget")
     @PostMapping
-    public BudgetDTO createBudget(final @Validated(OnCreate.class)
-                                  @RequestBody BudgetDTO budgetDTO) {
+    public BudgetDTO createBudget(
+            @Parameter(description = "Budget data transfer object", required = true)
+            @Validated(OnCreate.class) @RequestBody BudgetDTO budgetDTO) {
         Budget budget = budgetMapper.toEntity(budgetDTO);
         List<Wallet> wallets = walletService.getWalletsByIds(budgetDTO.getWalletIds());
         budget.setWallets(wallets);
@@ -48,18 +57,23 @@ public class BudgetController {
         return budgetMapper.toDto(createdBudget);
     }
 
+    @Operation(summary = "Update an existing Budget", description = "Update the details of an existing budget")
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetDTO.id)")
-    public BudgetDTO updateBudget(final @Validated(OnUpdate.class)
-                                  @RequestBody BudgetDTO budgetDTO) {
+    public BudgetDTO updateBudget(
+            @Parameter(description = "Budget data transfer object", required = true)
+            @Validated(OnUpdate.class) @RequestBody BudgetDTO budgetDTO) {
         Budget budget = budgetMapper.toEntity(budgetDTO);
         Budget createdBudget = budgetService.updateBudget(budget);
         return budgetMapper.toDto(createdBudget);
     }
 
+    @Operation(summary = "Delete a Budget by ID", description = "Delete a budget by its ID")
     @DeleteMapping("/{budgetId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetId)")
-    public void deleteBudget(@PathVariable Long budgetId) {
+    public void deleteBudget(
+            @Parameter(description = "ID of the budget to delete", required = true)
+            @PathVariable Long budgetId) {
         budgetService.deleteBudget(budgetId);
     }
 }

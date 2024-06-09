@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
                     key = "#user.username"
             )
     })
-    public User create(User user) {
+    public User createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalStateException("User already exists.");
         }
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
             @CachePut(value = "UserService::getUserById", key = "#user.id"),
             @CachePut(value = "UserService::getByUsername", key = "#user.username")
     })
-    public User update(User user) {
+    public User updateUser(User user) {
         User existing = getUserById(user.getId());
         existing.setName(user.getName());
         user.setUsername(user.getUsername());

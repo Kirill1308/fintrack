@@ -13,6 +13,12 @@ import com.popov.fintrack.wallet.model.InvitationStatus;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.UserMapper;
 import com.popov.fintrack.web.mapper.WalletMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +36,7 @@ import java.util.Properties;
 @RestController
 @RequestMapping("/api/v1/wallets")
 @RequiredArgsConstructor
+@Tag(name = "Wallet Controller", description = "API related to wallets")
 public class WalletController {
 
     private static final String INVITATION_LINK = "http://localhost:8080/api/v1/wallet/accept/";
@@ -41,6 +48,13 @@ public class WalletController {
     private final WalletMapper walletMapper;
     private final UserMapper userMapper;
 
+    @Operation(summary = "Get wallet by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the wallet",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = WalletDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Wallet not found",
+                    content = @Content)})
     @GetMapping("/{walletId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public WalletDTO getWalletById(@PathVariable Long walletId) {
@@ -48,6 +62,11 @@ public class WalletController {
         return walletMapper.toDto(wallet);
     }
 
+    @Operation(summary = "Create a new wallet")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Wallet created",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = WalletDTO.class))})})
     @PostMapping
     public WalletDTO createWallet(@RequestBody WalletDTO walletDTO) {
         Wallet wallet = walletMapper.toEntity(walletDTO);
@@ -55,7 +74,13 @@ public class WalletController {
         return walletMapper.toDto(updatedWallet);
     }
 
-
+    @Operation(summary = "Update an existing wallet")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Wallet updated",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = WalletDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Wallet not found",
+                    content = @Content)})
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletDTO.id)")
     public WalletDTO updateWallet(@RequestBody WalletDTO walletDTO) {
@@ -64,12 +89,25 @@ public class WalletController {
         return walletMapper.toDto(updatedWallet);
     }
 
+    @Operation(summary = "Delete a wallet")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Wallet deleted",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Wallet not found",
+                    content = @Content)})
     @DeleteMapping("/{walletId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public void deleteWallet(@PathVariable Long walletId) {
         walletService.deleteWallet(walletId);
     }
 
+    @Operation(summary = "Get all members of a wallet")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the members",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Wallet not found",
+                    content = @Content)})
     @GetMapping("/{walletId}/members")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public List<UserDTO> getWalletMembers(@PathVariable Long walletId) {
@@ -80,6 +118,11 @@ public class WalletController {
                 .toList();
     }
 
+    @Operation(summary = "Send an invitation to join a wallet")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Invitation sent",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = InvitationResponse.class))})})
     @PostMapping("/invite")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#request.walletId)")
     public InvitationResponse sendInvitation(@RequestBody InvitationRequest request) {
@@ -97,6 +140,12 @@ public class WalletController {
         return response;
     }
 
+    @Operation(summary = "Accept an invitation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Invitation accepted",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Invitation not found",
+                    content = @Content)})
     @PostMapping("/accept/{token}")
     public String acceptInvitation(@PathVariable String token) {
         Invitation invitation = invitationService.findByToken(token)
@@ -108,6 +157,12 @@ public class WalletController {
         return "Invitation accepted";
     }
 
+    @Operation(summary = "Exclude a user from a wallet")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User excluded",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Invitation not found",
+                    content = @Content)})
     @PostMapping("/{walletId}/exclude/{userId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public String excludeUserFromWallet(@PathVariable Long walletId, @PathVariable Long userId) {
