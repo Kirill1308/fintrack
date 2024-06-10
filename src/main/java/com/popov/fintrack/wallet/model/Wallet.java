@@ -3,7 +3,7 @@ package com.popov.fintrack.wallet.model;
 import com.popov.fintrack.budget.model.Budget;
 import com.popov.fintrack.transaction.model.Transaction;
 import com.popov.fintrack.user.model.User;
-import com.popov.fintrack.user.model.member.Member;
+import com.popov.fintrack.wallet.membership.model.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

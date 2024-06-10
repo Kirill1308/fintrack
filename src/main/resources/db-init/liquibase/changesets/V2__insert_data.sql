@@ -20,9 +20,6 @@ VALUES (1, 'John Wallet', 1000.00, 'USD'),
        (2, 'Mike Wallet', 5000.00, 'USD'),
        (3, 'Kirill Wallet', 1500.00, 'USD');
 
-INSERT INTO wallet_member (user_id, wallet_id)
-VALUES (3, 1);
-
 INSERT INTO transaction (user_id, wallet_id, type, category, payment, amount, currency, note, date_created,
                          date_updated)
 VALUES

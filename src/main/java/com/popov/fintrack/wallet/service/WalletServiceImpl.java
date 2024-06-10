@@ -1,10 +1,9 @@
 package com.popov.fintrack.wallet.service;
 
 import com.popov.fintrack.exception.ResourceNotFoundException;
-import com.popov.fintrack.user.MemberRepository;
-import com.popov.fintrack.user.MemberService;
+import com.popov.fintrack.wallet.membership.MemberService;
 import com.popov.fintrack.user.UserService;
-import com.popov.fintrack.user.model.member.Member;
+import com.popov.fintrack.wallet.membership.model.Member;
 import com.popov.fintrack.wallet.WalletRepository;
 import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
@@ -20,10 +19,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
-    private final WalletRepository walletRepository;
-    private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final UserService userService;
+    private final MemberService memberService;
+
+    private final WalletRepository walletRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -36,7 +35,7 @@ public class WalletServiceImpl implements WalletService {
     @Transactional(readOnly = true)
     public List<Wallet> getWallets(Long userId) {
         List<Wallet> ownedWallets = walletRepository.findOwnedWallets(userId);
-        List<Wallet> sharedWallets = memberRepository.findSharedWallets(userId);
+        List<Wallet> sharedWallets = memberService.findSharedWallets(userId);
 
         List<Wallet> wallets = new ArrayList<>();
         wallets.addAll(ownedWallets);
@@ -82,7 +81,7 @@ public class WalletServiceImpl implements WalletService {
         Wallet wallet = walletRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet not found"));
 
-        memberRepository.deleteAll(wallet.getMembers());
+        memberService.deleteAllMembers(wallet.getMembers());
         walletRepository.delete(wallet);
     }
 

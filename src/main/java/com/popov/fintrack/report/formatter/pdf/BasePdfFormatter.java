@@ -9,7 +9,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import com.popov.fintrack.user.model.member.Member;
+import com.popov.fintrack.wallet.membership.model.Member;
 import com.popov.fintrack.wallet.model.Wallet;
 
 public abstract class BasePdfFormatter {

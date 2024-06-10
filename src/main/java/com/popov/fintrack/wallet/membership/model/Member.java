@@ -1,4 +1,4 @@
-package com.popov.fintrack.user.model.member;
+package com.popov.fintrack.wallet.membership.model;
 
 import com.popov.fintrack.user.model.User;
 import com.popov.fintrack.wallet.model.Wallet;

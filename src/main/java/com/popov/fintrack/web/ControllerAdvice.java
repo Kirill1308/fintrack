@@ -97,7 +97,7 @@ public class ControllerAdvice {
         if (cause instanceof InvalidCurrencyException) {
             return new ExceptionBody(cause.getMessage());
         } else {
-            return new ExceptionBody("Failed to parse JSON request");
+            return new ExceptionBody("Failed to parse JSON invitation");
         }
     }
 

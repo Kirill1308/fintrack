@@ -1,6 +1,6 @@
-package com.popov.fintrack.user;
+package com.popov.fintrack.wallet.membership;
 
-import com.popov.fintrack.user.model.member.Member;
+import com.popov.fintrack.wallet.membership.model.Member;
 import com.popov.fintrack.wallet.model.Wallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

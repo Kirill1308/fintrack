@@ -57,21 +57,6 @@ CREATE TABLE IF NOT EXISTS transaction
     FOREIGN KEY (wallet_id) REFERENCES wallet (id)
 );
 
-CREATE TABLE invitation
-(
-    id           BIGSERIAL PRIMARY KEY,
-    token        VARCHAR(255) NOT NULL,
-    wallet_id    BIGINT       NOT NULL,
-    sender_id    BIGINT       NOT NULL,
-    recipient_id BIGINT       NOT NULL,
-    status       VARCHAR(50)  NOT NULL,
-    created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (wallet_id) REFERENCES wallet (id),
-    FOREIGN KEY (sender_id) REFERENCES users (id),
-    FOREIGN KEY (recipient_id) REFERENCES users (id)
-);
-
 CREATE TABLE IF NOT EXISTS budget
 (
     id               BIGSERIAL PRIMARY KEY,

@@ -1,6 +1,6 @@
 package com.popov.fintrack.report.formatter.xlsx;
 
-import com.popov.fintrack.user.model.member.Member;
+import com.popov.fintrack.wallet.membership.model.Member;
 import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
 import org.apache.poi.ss.usermodel.BorderStyle;

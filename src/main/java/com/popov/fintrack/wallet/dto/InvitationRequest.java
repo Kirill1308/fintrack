@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @Schema(description = "Request object for sending wallet invitations")
-public class InvitationRequest {
+public class InvitationRequest implements Serializable {
 
     @Schema(description = "ID of the wallet to which the invitation is sent", example = "1")
     @NotNull(message = "Wallet ID cannot be null")

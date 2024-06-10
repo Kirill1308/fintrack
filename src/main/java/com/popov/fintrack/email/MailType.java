@@ -1,4 +1,4 @@
-package com.popov.fintrack.email.utils;
+package com.popov.fintrack.email;
 
 public enum MailType {
     REGISTRATION,
