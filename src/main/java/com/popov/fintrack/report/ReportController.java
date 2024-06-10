@@ -31,12 +31,10 @@ public class ReportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Yearly report generated successfully",
                     content = @Content(mediaType = "application/octet-stream")),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content),
-            @ApiResponse(responseCode = "403", description = "Access denied",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping("/yearly")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#reportRequest.walletId)")
@@ -52,12 +50,10 @@ public class ReportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Monthly report generated successfully",
                     content = @Content(mediaType = "application/octet-stream")),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content),
-            @ApiResponse(responseCode = "403", description = "Access denied",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping("/monthly")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#reportRequest.walletId)")
@@ -73,12 +69,10 @@ public class ReportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Custom report generated successfully",
                     content = @Content(mediaType = "application/octet-stream")),
-            @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content),
-            @ApiResponse(responseCode = "403", description = "Access denied",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping("/custom")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#reportRequest.walletId)")

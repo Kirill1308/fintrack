@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,36 +33,45 @@ public class SummaryController {
 
     private final SummaryService summaryService;
 
-    @Operation(summary = "Get financial summary based on filters",
-            responses = {
-                    @ApiResponse(description = "Financial summary", responseCode = "200", content = @Content(schema = @Schema(implementation = FinancialSummary.class))),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
-                    @ApiResponse(description = "Forbidden", responseCode = "403")
-            })
+    @Operation(summary = "Get financial summary based on filters")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Financial Summary", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = FinancialSummary.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PostMapping("/summary")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallets(#filters.walletIds)")
     public FinancialSummary getFinancialSummary(@RequestBody @Validated FilterDTO filters) {
         return summaryService.getFinancialSummary(filters);
     }
 
-    @Operation(summary = "Get custom summary based on filters",
-            responses = {
-                    @ApiResponse(description = "Custom summary", responseCode = "200", content = @Content(schema = @Schema(implementation = CustomSummary.class))),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
-                    @ApiResponse(description = "Forbidden", responseCode = "403")
-            })
+    @Operation(summary = "Get custom summary based on filters")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Custom Summary", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = CustomSummary.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PostMapping("/custom-summary")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallets(#filters.walletIds)")
     public CustomSummary getCustomSummary(@RequestBody @Validated FilterDTO filters) {
         return summaryService.getCustomSummary(filters);
     }
 
-    @Operation(summary = "Get yearly summary for a wallet",
-            responses = {
-                    @ApiResponse(description = "Yearly summary", responseCode = "200", content = @Content(schema = @Schema(implementation = YearlySummary.class))),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
-                    @ApiResponse(description = "Forbidden", responseCode = "403")
-            })
+    @Operation(summary = "Get yearly summary for a wallet")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Yearly Summary", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = YearlySummary.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @GetMapping("/wallets/{walletId}/yearly-summary")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public YearlySummary getYearlySummary(
@@ -70,12 +80,15 @@ public class SummaryController {
         return summaryService.getYearlySummary(year, walletId);
     }
 
-    @Operation(summary = "Get monthly summary for a wallet",
-            responses = {
-                    @ApiResponse(description = "Monthly summary", responseCode = "200", content = @Content(schema = @Schema(implementation = MonthlySummary.class))),
-                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
-                    @ApiResponse(description = "Forbidden", responseCode = "403")
-            })
+    @Operation(summary = "Get monthly summary for a wallet")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Monthly Summary", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = MonthlySummary.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @GetMapping("/wallets/{walletId}/monthly-summary")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public MonthlySummary getMonthlySummary(

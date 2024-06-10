@@ -26,7 +26,7 @@ public class UserDTO {
     @Length(min = 3, max = 50, message = "Name must be between 3 and 50 characters", groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
-    @Schema(description = "Username of the user", example = "johndoe")
+    @Schema(description = "Username of the user", example = "johndoe@gmail.com")
     @NotNull(message = "Username cannot be null", groups = {OnCreate.class, OnUpdate.class})
     @Length(min = 3, max = 50, message = "Username must be between 3 and 50 characters", groups = {OnCreate.class, OnUpdate.class})
     private String username;

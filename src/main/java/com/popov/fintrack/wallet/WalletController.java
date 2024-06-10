@@ -50,11 +50,13 @@ public class WalletController {
 
     @Operation(summary = "Get wallet by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the wallet",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = WalletDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Wallet not found",
-                    content = @Content)})
+            @ApiResponse(description = "Get Wallet Details", responseCode = "200",
+                    content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = WalletDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @GetMapping("/{walletId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public WalletDTO getWalletById(@PathVariable Long walletId) {
@@ -64,9 +66,13 @@ public class WalletController {
 
     @Operation(summary = "Create a new wallet")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Wallet created",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = WalletDTO.class))})})
+            @ApiResponse(description = "Wallet created successfully", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = WalletDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PostMapping
     public WalletDTO createWallet(@RequestBody WalletDTO walletDTO) {
         Wallet wallet = walletMapper.toEntity(walletDTO);
@@ -76,11 +82,13 @@ public class WalletController {
 
     @Operation(summary = "Update an existing wallet")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Wallet updated",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = WalletDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Wallet not found",
-                    content = @Content)})
+            @ApiResponse(description = "Wallet updated successfully", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = WalletDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletDTO.id)")
     public WalletDTO updateWallet(@RequestBody WalletDTO walletDTO) {
@@ -91,10 +99,12 @@ public class WalletController {
 
     @Operation(summary = "Delete a wallet")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Wallet deleted",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Wallet not found",
-                    content = @Content)})
+            @ApiResponse(description = "Wallet deleted successfully", responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @DeleteMapping("/{walletId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public void deleteWallet(@PathVariable Long walletId) {
@@ -103,11 +113,13 @@ public class WalletController {
 
     @Operation(summary = "Get all members of a wallet")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the members",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = UserDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Wallet not found",
-                    content = @Content)})
+            @ApiResponse(description = "List of members", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = UserDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @GetMapping("/{walletId}/members")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public List<UserDTO> getWalletMembers(@PathVariable Long walletId) {
@@ -120,9 +132,13 @@ public class WalletController {
 
     @Operation(summary = "Send an invitation to join a wallet")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Invitation sent",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = InvitationResponse.class))})})
+            @ApiResponse(description = "Invitation was sent", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = InvitationResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PostMapping("/invite")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#request.walletId)")
     public InvitationResponse sendInvitation(@RequestBody InvitationRequest request) {
@@ -142,10 +158,11 @@ public class WalletController {
 
     @Operation(summary = "Accept an invitation")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Invitation accepted",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Invitation not found",
-                    content = @Content)})
+            @ApiResponse(responseCode = "200", description = "Invitation accepted", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PostMapping("/accept/{token}")
     public String acceptInvitation(@PathVariable String token) {
         Invitation invitation = invitationService.findByToken(token)
@@ -159,10 +176,11 @@ public class WalletController {
 
     @Operation(summary = "Exclude a user from a wallet")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User excluded",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "Invitation not found",
-                    content = @Content)})
+            @ApiResponse(responseCode = "200", description = "User excluded from wallet and notified", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PostMapping("/{walletId}/exclude/{userId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public String excludeUserFromWallet(@PathVariable Long walletId, @PathVariable Long userId) {

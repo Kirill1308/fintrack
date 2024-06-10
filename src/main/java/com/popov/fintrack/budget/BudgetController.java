@@ -9,6 +9,10 @@ import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.BudgetMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +39,14 @@ public class BudgetController {
     private final BudgetMapper budgetMapper;
 
     @Operation(summary = "Get Budget by ID", description = "Get details of a budget by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Budget Details", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = BudgetDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @GetMapping("/{budgetId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetId)")
     public BudgetDTO getBudgetById(
@@ -45,6 +57,14 @@ public class BudgetController {
     }
 
     @Operation(summary = "Create a new Budget", description = "Create a new budget")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Budget Details", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = BudgetDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PostMapping
     public BudgetDTO createBudget(
             @Parameter(description = "Budget data transfer object", required = true)
@@ -58,6 +78,14 @@ public class BudgetController {
     }
 
     @Operation(summary = "Update an existing Budget", description = "Update the details of an existing budget")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Budget Details", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = BudgetDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetDTO.id)")
     public BudgetDTO updateBudget(
@@ -69,6 +97,14 @@ public class BudgetController {
     }
 
     @Operation(summary = "Delete a Budget by ID", description = "Delete a budget by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Budget deleted successfully", responseCode = "200",
+                    content = @Content(schema = @Schema(implementation = BudgetDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @DeleteMapping("/{budgetId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToBudget(#budgetId)")
     public void deleteBudget(

@@ -18,6 +18,9 @@ import com.popov.fintrack.web.mapper.UserMapper;
 import com.popov.fintrack.web.mapper.WalletMapper;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,32 +52,61 @@ public class UserController {
     private final WalletMapper walletMapper;
     private final BudgetMapper budgetMapper;
 
+    @GetMapping("/{id}")
+    @PreAuthorize("@customSecurityExpression.hasAccessUser(#id)")
+    @Operation(summary = "Get user details", description = "Retrieves the details of a user by ID")
+    @ApiResponses(value = {
+            @ApiResponse(description = "User details", responseCode = "200",
+                    content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = UserDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    public UserDTO getById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        return userMapper.toDto(user);
+    }
+
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userDTO.id)")
     @Operation(summary = "Update user details", description = "Updates the details of an existing user")
+    @ApiResponses(value = {
+            @ApiResponse(description = "User details updated successfully", responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     public UserDTO update(@Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         User updatedUser = userService.updateUser(user);
         return userMapper.toDto(updatedUser);
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("@customSecurityExpression.hasAccessUser(#id)")
-    @Operation(summary = "Get user details", description = "Retrieves the details of a user by ID")
-    public UserDTO getById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return userMapper.toDto(user);
-    }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#id)")
     @Operation(summary = "Delete user", description = "Deletes a user by ID")
+    @ApiResponses(value = {
+            @ApiResponse(description = "User deleted successfully", responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     public void deleteById(@PathVariable Long id) {
         userService.deleteUserById(id);
     }
 
     @PostMapping("/image")
     @Operation(summary = "Upload profile image", description = "Uploads a new profile image for the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Profile image uploaded successfully", responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     public void uploadImage(@Validated @ModelAttribute ProfileImageDTO profileImageDTO) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         if (userService.getUserById(userId).getFile() != null) {
@@ -86,6 +118,13 @@ public class UserController {
 
     @PutMapping("/image")
     @Operation(summary = "Update profile image", description = "Updates the profile image for the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Profile image updated successfully", responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     public void updateImage(@Validated @ModelAttribute ProfileImageDTO profileImageDTO) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
 
@@ -95,6 +134,13 @@ public class UserController {
 
     @DeleteMapping("/image")
     @Operation(summary = "Delete profile image", description = "Deletes the profile image of the authenticated user")
+    @ApiResponses(value = {
+            @ApiResponse(description = "Profile image deleted successfully", responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     public void deleteImage() {
         Long userId = SecurityUtils.getAuthenticatedUserId();
         userService.deleteProfileImage(userId);
@@ -103,6 +149,14 @@ public class UserController {
     @GetMapping("/{userId}/wallets")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userId)")
     @Operation(summary = "Get user wallets", description = "Retrieves the wallets associated with a user by user ID")
+    @ApiResponses(value = {
+            @ApiResponse(description = "List of wallets", responseCode = "200",
+                    content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = WalletDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     public List<WalletDTO> getWallets(@PathVariable Long userId) {
         List<Wallet> wallets = walletService.getWallets(userId);
         return walletMapper.toDto(wallets);
@@ -111,6 +165,14 @@ public class UserController {
     @GetMapping("/{userId}/budgets")
     @PreAuthorize("@customSecurityExpression.hasAccessUser(#userId)")
     @Operation(summary = "Get user budgets", description = "Retrieves the budgets associated with a user by user ID")
+    @ApiResponses(value = {
+            @ApiResponse(description = "List of budgets", responseCode = "200",
+                    content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = BudgetDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Access Denied"),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     public List<BudgetDTO> getBudgetsByUserId(@PathVariable Long userId) {
         List<Budget> budgets = budgetService.getBudgets(userId);
         return budgetMapper.toDto(budgets);
