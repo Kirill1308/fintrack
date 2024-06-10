@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/reports")
 @RequiredArgsConstructor
@@ -39,10 +41,12 @@ public class ReportController {
     @PostMapping("/yearly")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#reportRequest.walletId)")
     public ResponseEntity<byte[]> getYearlyReport(@RequestBody ReportRequest reportRequest) {
+        log.info("Generating yearly report for wallet ID: {}, year: {}", reportRequest.getWalletId(), reportRequest.getYear());
         validateFormat(reportRequest.getFormat());
         byte[] contents = reportService.createYearlyReport(reportRequest.getFormat(), reportRequest.getYear(), reportRequest.getWalletId());
 
         HttpHeaders headers = createHeaders("yearly", reportRequest.getYear(), reportRequest.getFormat());
+        log.info("Yearly report generated successfully for wallet ID: {}, year: {}", reportRequest.getWalletId(), reportRequest.getYear());
         return ResponseEntity.ok().headers(headers).contentType(getMediaType(reportRequest.getFormat())).body(contents);
     }
 
@@ -58,10 +62,12 @@ public class ReportController {
     @PostMapping("/monthly")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#reportRequest.walletId)")
     public ResponseEntity<byte[]> getMonthlyReport(@RequestBody ReportRequest reportRequest) {
+        log.info("Generating monthly report for wallet ID: {}, year: {}, month: {}", reportRequest.getWalletId(), reportRequest.getYear(), reportRequest.getMonth());
         validateFormat(reportRequest.getFormat());
         byte[] contents = reportService.createMonthlyReport(reportRequest.getFormat(), reportRequest.getYear(), reportRequest.getMonth(), reportRequest.getWalletId());
 
         HttpHeaders headers = createHeaders("monthly", reportRequest.getYear(), reportRequest.getFormat());
+        log.info("Monthly report generated successfully for wallet ID: {}, year: {}, month: {}", reportRequest.getWalletId(), reportRequest.getYear(), reportRequest.getMonth());
         return ResponseEntity.ok().headers(headers).contentType(getMediaType(reportRequest.getFormat())).body(contents);
     }
 
@@ -77,16 +83,19 @@ public class ReportController {
     @PostMapping("/custom")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#reportRequest.walletId)")
     public ResponseEntity<byte[]> getCustomReport(@RequestBody CustomReportRequest reportRequest) {
+        log.info("Generating custom report for wallet ID: {}, date range: {} - {}", reportRequest.getWalletId(), reportRequest.getDateRange().getStartDate(), reportRequest.getDateRange().getEndDate());
         validateFormat(reportRequest.getFormat());
         byte[] contents = reportService.createCustomReport(reportRequest.getFormat(), reportRequest.getDateRange(), reportRequest.getWalletId());
 
         HttpHeaders headers = createHeaders("custom", reportRequest.getDateRange().getStartDate().getYear(), reportRequest.getFormat());
+        log.info("Custom report generated successfully for wallet ID: {}, date range: {} - {}", reportRequest.getWalletId(), reportRequest.getDateRange().getStartDate(), reportRequest.getDateRange().getEndDate());
         return ResponseEntity.ok().headers(headers).contentType(getMediaType(reportRequest.getFormat())).body(contents);
     }
 
     private void validateFormat(String format) {
         if (!format.equalsIgnoreCase("pdf") && !format.equalsIgnoreCase("xlsx")) {
-            throw new IllegalArgumentException("Invalid report format. Must be 'pdf', 'xlsx'.");
+            log.warn("Invalid report format: {}", format);
+            throw new IllegalArgumentException("Invalid report format. Must be 'pdf' or 'xlsx'.");
         }
     }
 

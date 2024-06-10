@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/wallets/membership")
 @RequiredArgsConstructor
@@ -40,7 +42,6 @@ import java.util.List;
 public class WalletMembershipController {
 
     private final ApplicationEventPublisher eventPublisher;
-
     private final MemberService memberService;
     private final WalletService walletService;
     private final UserService userService;
@@ -58,6 +59,7 @@ public class WalletMembershipController {
     @GetMapping("/members")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public List<UserDTO> getWalletMembers(@RequestParam Long walletId) {
+        log.info("Fetching members of wallet with ID: {}", walletId);
         List<Member> members = walletService.findAllMembers(walletId);
         return members.stream()
                 .map(Member::getUser)
@@ -77,6 +79,7 @@ public class WalletMembershipController {
     @PostMapping("/invite")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#invitation.walletId)")
     public InvitationResponse sendInvitation(@RequestBody InvitationRequest invitation, HttpServletRequest req) {
+        log.info("Sending invitation to email: {} for wallet ID: {}", invitation.getRecipientEmail(), invitation.getWalletId());
         ConfirmData confirmData = new ConfirmData(invitation);
         req.getSession().setAttribute("token", confirmData);
 
@@ -85,6 +88,7 @@ public class WalletMembershipController {
         InvitationResponse response = new InvitationResponse();
         response.setAcceptToken(confirmData.getToken());
 
+        log.info("Invitation sent with token: {}", confirmData.getToken());
         return response;
     }
 
@@ -97,6 +101,7 @@ public class WalletMembershipController {
     })
     @PostMapping("/accept")
     public String acceptInvitation(@RequestParam String token, HttpSession session) {
+        log.info("Accepting invitation with token: {}", token);
         ConfirmData confirmData = (ConfirmData) session.getAttribute("token");
 
         if (token.equals(confirmData.getToken())) {
@@ -104,8 +109,10 @@ public class WalletMembershipController {
             Wallet wallet = walletService.getWalletById(confirmData.getInvitation().getWalletId());
             memberService.addMember(wallet, recipient);
             session.invalidate();
+            log.info("Invitation accepted for wallet ID: {} and user: {}", confirmData.getInvitation().getWalletId(), recipient.getUsername());
             return "Invitation accepted";
         }
+        log.error("Token mismatch error for token: {}", token);
         throw new DataConflictException("Token mismatch error");
     }
 
@@ -119,12 +126,14 @@ public class WalletMembershipController {
     @PostMapping("/exclude")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public String excludeUserFromWallet(@RequestParam Long walletId, @RequestParam Long userId) {
+        log.info("Excluding user with ID: {} from wallet with ID: {}", userId, walletId);
         User recipient = userService.getUserById(userId);
         Wallet wallet = walletService.getWalletById(walletId);
         memberService.excludeMember(wallet, recipient);
 
         eventPublisher.publishEvent(new ExclusionEvent(userId, walletId));
 
+        log.info("User with ID: {} excluded from wallet with ID: {}", userId, walletId);
         return "User has been excluded from the wallet and notified";
     }
 }

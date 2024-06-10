@@ -10,12 +10,14 @@ import com.popov.fintrack.user.service.UserServiceImpl;
 import com.popov.fintrack.utills.SpecificationUtils;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
@@ -61,6 +63,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional(readOnly = true)
     public boolean isOwnerOfTransaction(Long userId, Long transactionId) {
+        log.debug("Checking if user with id {} is owner of transaction with id {}", userId, transactionId);
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
 

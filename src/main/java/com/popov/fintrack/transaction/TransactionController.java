@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
@@ -57,17 +59,20 @@ public class TransactionController {
             @RequestParam @Parameter(description = "Page number for pagination") int page,
             @RequestParam @Parameter(description = "Page size for pagination") int limit) {
 
+        log.info("Request to get filtered transactions with filters: {}, page: {}, limit: {}", filters, page, limit);
         Pageable pageable = PageRequest.of(page, limit);
 
         Page<Transaction> transactions = transactionService.getFilteredTransactions(filters, pageable);
         List<TransactionDTO> transactionDTOs = transactionMapper.toDto(transactions.getContent());
 
-        return new PaginatedResponse<>(
+        PaginatedResponse<TransactionDTO> response = new PaginatedResponse<>(
                 transactionDTOs,
                 transactions.getTotalPages(),
                 transactions.getTotalElements(),
                 transactions.getNumber()
         );
+        log.info("Retrieved filtered transactions: {}", response);
+        return response;
     }
 
     @GetMapping("/{transactionId}")
@@ -82,8 +87,11 @@ public class TransactionController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public TransactionDTO getTransactionById(@PathVariable @Parameter(description = "ID of the transaction to retrieve") Long transactionId) {
+        log.info("Request to get transaction by ID: {}", transactionId);
         Transaction transaction = transactionService.getTransaction(transactionId);
-        return transactionMapper.toDto(transaction);
+        TransactionDTO transactionDTO = transactionMapper.toDto(transaction);
+        log.info("Retrieved transaction: {}", transactionDTO);
+        return transactionDTO;
     }
 
     @PostMapping("/{walletId}")
@@ -99,11 +107,14 @@ public class TransactionController {
     })
     public TransactionDTO createTransaction(@PathVariable @Parameter(description = "ID of the wallet to create the transaction for") Long walletId,
                                             @RequestBody @Parameter(description = "Transaction details") TransactionDTO transactionDTO) {
+        log.info("Request to create transaction for wallet ID: {}, transaction details: {}", walletId, transactionDTO);
         Wallet wallet = walletService.getWalletById(walletId);
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         transaction.setWallet(wallet);
         Transaction createdTransaction = transactionService.createTransaction(transaction);
-        return transactionMapper.toDto(createdTransaction);
+        TransactionDTO createdTransactionDTO = transactionMapper.toDto(createdTransaction);
+        log.info("Created transaction: {}", createdTransactionDTO);
+        return createdTransactionDTO;
     }
 
     @PutMapping
@@ -118,9 +129,12 @@ public class TransactionController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public TransactionDTO updateTransaction(@RequestBody @Parameter(description = "Updated transaction details") TransactionDTO transactionDTO) {
+        log.info("Request to update transaction: {}", transactionDTO);
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         Transaction updatedTransaction = transactionService.updateTransaction(transaction);
-        return transactionMapper.toDto(updatedTransaction);
+        TransactionDTO updatedTransactionDTO = transactionMapper.toDto(updatedTransaction);
+        log.info("Updated transaction: {}", updatedTransactionDTO);
+        return updatedTransactionDTO;
     }
 
     @DeleteMapping("/{transactionId}")
@@ -134,6 +148,8 @@ public class TransactionController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     public void deleteTransaction(@PathVariable @Parameter(description = "ID of the transaction to delete") Long transactionId) {
+        log.info("Request to delete transaction by ID: {}", transactionId);
         transactionService.deleteTransaction(transactionId);
+        log.info("Deleted transaction with ID: {}", transactionId);
     }
 }

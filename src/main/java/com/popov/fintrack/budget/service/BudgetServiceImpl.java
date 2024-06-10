@@ -13,6 +13,7 @@ import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BudgetServiceImpl implements BudgetService {
@@ -74,6 +76,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public boolean isOwnerOfBudget(Long userId, Long budgetId) {
+        log.info("Checking if user ID: {} is owner of budget ID: {}", userId, budgetId);
         return budgetRepository.existsByIdAndOwnerId(budgetId, userId);
     }
 
@@ -93,6 +96,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     private void updateBudgetAmounts(Budget budget) {
+        log.debug("Updating budget amounts for budget ID: {}", budget.getId());
         FilterDTO filters = createFilterFromBudget(budget);
 
         Double totalAmountSpent = expenseService.getTotalFilteredExpenses(filters);
@@ -112,6 +116,7 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     private FilterDTO createFilterFromBudget(Budget budget) {
+        log.debug("Creating filter from budget ID: {}", budget.getId());
         FilterDTO filters = new FilterDTO();
         List<Long> walletIds = budget.getWallets().stream()
                 .map(Wallet::getId)

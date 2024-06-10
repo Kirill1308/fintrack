@@ -13,12 +13,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -39,7 +41,10 @@ public class AuthController {
     })
     @PostMapping("/login")
     public JwtResponse login(@Validated @RequestBody final JwtRequest loginRequest) {
-        return authService.login(loginRequest);
+        log.info("Attempting to log in user with username: {}", loginRequest.getUsername());
+        JwtResponse response = authService.login(loginRequest);
+        log.info("User {} logged in successfully", loginRequest.getUsername());
+        return response;
     }
 
     @Operation(summary = "User registration", description = "Register a new user")
@@ -52,9 +57,12 @@ public class AuthController {
     })
     @PostMapping("/register")
     public UserDTO register(@Validated(OnCreate.class) @RequestBody final UserDTO userDTO) {
+        log.info("Attempting to register user with username: {}", userDTO.getUsername());
         User user = userMapper.toEntity(userDTO);
         User createdUser = userService.createUser(user);
-        return userMapper.toDto(createdUser);
+        UserDTO createdUserDTO = userMapper.toDto(createdUser);
+        log.info("User {} registered successfully", userDTO.getUsername());
+        return createdUserDTO;
     }
 
     @Operation(summary = "Refresh JWT token", description = "Refresh JWT token using refresh token")
@@ -67,6 +75,9 @@ public class AuthController {
     })
     @PostMapping("/refresh")
     public JwtResponse refresh(@RequestBody final String refreshToken) {
-        return authService.refresh(refreshToken);
+        log.info("Attempting to refresh JWT token");
+        JwtResponse response = authService.refresh(refreshToken);
+        log.info("JWT token refreshed successfully");
+        return response;
     }
 }

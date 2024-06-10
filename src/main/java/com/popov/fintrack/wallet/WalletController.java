@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/wallets")
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class WalletController {
     @Operation(summary = "Get wallet by ID")
     @ApiResponses(value = {
             @ApiResponse(description = "Get Wallet Details", responseCode = "200",
-                    content = @Content(schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = WalletDTO.class))),
+                    content = @Content(schema = @Schema(implementation = WalletDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Access Denied"),
@@ -41,8 +43,11 @@ public class WalletController {
     @GetMapping("/{walletId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public WalletDTO getWalletById(@PathVariable Long walletId) {
+        log.info("Get wallet by ID: {}", walletId);
         Wallet wallet = walletService.getWalletById(walletId);
-        return walletMapper.toDto(wallet);
+        WalletDTO walletDTO = walletMapper.toDto(wallet);
+        log.info("Wallet details retrieved for ID: {}", walletId);
+        return walletDTO;
     }
 
     @Operation(summary = "Create a new wallet")
@@ -56,9 +61,12 @@ public class WalletController {
     })
     @PostMapping
     public WalletDTO createWallet(@RequestBody WalletDTO walletDTO) {
+        log.info("Creating wallet with details: {}", walletDTO);
         Wallet wallet = walletMapper.toEntity(walletDTO);
-        Wallet updatedWallet = walletService.createWallet(wallet);
-        return walletMapper.toDto(updatedWallet);
+        Wallet createdWallet = walletService.createWallet(wallet);
+        WalletDTO createdWalletDTO = walletMapper.toDto(createdWallet);
+        log.info("Wallet created with ID: {}", createdWalletDTO.getId());
+        return createdWalletDTO;
     }
 
     @Operation(summary = "Update an existing wallet")
@@ -73,9 +81,12 @@ public class WalletController {
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletDTO.id)")
     public WalletDTO updateWallet(@RequestBody WalletDTO walletDTO) {
+        log.info("Updating wallet with ID: {}", walletDTO.getId());
         Wallet wallet = walletMapper.toEntity(walletDTO);
         Wallet updatedWallet = walletService.updateWallet(wallet);
-        return walletMapper.toDto(updatedWallet);
+        WalletDTO updatedWalletDTO = walletMapper.toDto(updatedWallet);
+        log.info("Wallet updated with ID: {}", updatedWalletDTO.getId());
+        return updatedWalletDTO;
     }
 
     @Operation(summary = "Delete a wallet")
@@ -89,6 +100,8 @@ public class WalletController {
     @DeleteMapping("/{walletId}")
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public void deleteWallet(@PathVariable Long walletId) {
+        log.info("Deleting wallet with ID: {}", walletId);
         walletService.deleteWallet(walletId);
+        log.info("Wallet deleted with ID: {}", walletId);
     }
 }

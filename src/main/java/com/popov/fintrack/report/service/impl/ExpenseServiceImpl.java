@@ -103,26 +103,26 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public Double getTotalExpensesForMonth(int year, Month month, Long walletId) {
         Double total = expenseRepository.getTotalExpensesForMonth(year, month.getValue(), walletId);
-        return total == null ? Double.valueOf(0.0) : total;
+        return total == null ? 0.0 : total;
     }
 
     @Override
     public Double getAverageDailyExpense(int year, Month month, Long walletId) {
         Double average = expenseRepository.getAverageDailyExpense(year, month.getValue(), walletId);
-        return average == null ? Double.valueOf(0.0) : average;
+        return average == null ? 0.0 : average;
     }
 
     @Override
     public Double getHighestDailyExpense(int year, Month month, Long walletId) {
         Double highest = expenseRepository.getHighestDailyExpense(year, month.getValue(), walletId);
-        return highest == null ? Double.valueOf(0.0) : highest;
+        return highest == null ? 0.0 : highest;
     }
 
     @Override
     public Double getAverageDailyExpense(FilterDTO filterDTO) {
         Specification<Transaction> spec = SpecificationUtils.buildSpecification(filterDTO, Type.EXPENSE);
         Double average = expenseRepository.getAverageDailyExpense(spec);
-        return average == null ? Double.valueOf(0.0) : average;
+        return average == null ? 0.0 : average;
     }
 
     @Override

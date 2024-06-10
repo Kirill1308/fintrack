@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/budgets")
@@ -52,8 +54,11 @@ public class BudgetController {
     public BudgetDTO getBudgetById(
             @Parameter(description = "ID of the budget to retrieve", required = true)
             @PathVariable Long budgetId) {
+        log.info("Retrieving budget with ID: {}", budgetId);
         Budget budget = budgetService.getBudgetById(budgetId);
-        return budgetMapper.toDto(budget);
+        BudgetDTO budgetDTO = budgetMapper.toDto(budget);
+        log.info("Budget retrieved with ID: {}", budgetId);
+        return budgetDTO;
     }
 
     @Operation(summary = "Create a new Budget", description = "Create a new budget")
@@ -69,12 +74,14 @@ public class BudgetController {
     public BudgetDTO createBudget(
             @Parameter(description = "Budget data transfer object", required = true)
             @Validated(OnCreate.class) @RequestBody BudgetDTO budgetDTO) {
+        log.info("Creating new budget with details: {}", budgetDTO);
         Budget budget = budgetMapper.toEntity(budgetDTO);
         List<Wallet> wallets = walletService.getWalletsByIds(budgetDTO.getWalletIds());
         budget.setWallets(wallets);
-
         Budget createdBudget = budgetService.updateBudget(budget);
-        return budgetMapper.toDto(createdBudget);
+        BudgetDTO createdBudgetDTO = budgetMapper.toDto(createdBudget);
+        log.info("Budget created with ID: {}", createdBudgetDTO.getId());
+        return createdBudgetDTO;
     }
 
     @Operation(summary = "Update an existing Budget", description = "Update the details of an existing budget")
@@ -91,15 +98,17 @@ public class BudgetController {
     public BudgetDTO updateBudget(
             @Parameter(description = "Budget data transfer object", required = true)
             @Validated(OnUpdate.class) @RequestBody BudgetDTO budgetDTO) {
+        log.info("Updating budget with ID: {}", budgetDTO.getId());
         Budget budget = budgetMapper.toEntity(budgetDTO);
-        Budget createdBudget = budgetService.updateBudget(budget);
-        return budgetMapper.toDto(createdBudget);
+        Budget updatedBudget = budgetService.updateBudget(budget);
+        BudgetDTO updatedBudgetDTO = budgetMapper.toDto(updatedBudget);
+        log.info("Budget updated with ID: {}", updatedBudgetDTO.getId());
+        return updatedBudgetDTO;
     }
 
     @Operation(summary = "Delete a Budget by ID", description = "Delete a budget by its ID")
     @ApiResponses(value = {
-            @ApiResponse(description = "Budget deleted successfully", responseCode = "200",
-                    content = @Content(schema = @Schema(implementation = BudgetDTO.class))),
+            @ApiResponse(description = "Budget deleted successfully", responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Access Denied"),
@@ -110,6 +119,8 @@ public class BudgetController {
     public void deleteBudget(
             @Parameter(description = "ID of the budget to delete", required = true)
             @PathVariable Long budgetId) {
+        log.info("Deleting budget with ID: {}", budgetId);
         budgetService.deleteBudget(budgetId);
+        log.info("Budget deleted with ID: {}", budgetId);
     }
 }
