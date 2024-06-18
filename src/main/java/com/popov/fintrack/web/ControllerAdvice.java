@@ -1,6 +1,7 @@
 package com.popov.fintrack.web;
 
 import com.popov.fintrack.exception.AccessDeniedException;
+import com.popov.fintrack.exception.DataConflictException;
 import com.popov.fintrack.exception.ExceptionBody;
 import com.popov.fintrack.exception.ImageUploadException;
 import com.popov.fintrack.exception.InvalidCurrencyException;
@@ -99,6 +100,12 @@ public class ControllerAdvice {
         } else {
             return new ExceptionBody("Failed to parse JSON invitation");
         }
+    }
+
+    @ExceptionHandler(DataConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionBody handleDataConflict(final DataConflictException e) {
+        return new ExceptionBody(e.getMessage());
     }
 
     @ExceptionHandler(ImageUploadException.class)

@@ -69,6 +69,7 @@ public class UserController {
     public UserDTO getById(@PathVariable Long id) {
         log.info("Fetching user details for ID: {}", id);
         User user = userService.getUserById(id);
+        log.info("User details fetched successfully for ID: {}", user.getUsername());
         return userMapper.toDto(user);
     }
 

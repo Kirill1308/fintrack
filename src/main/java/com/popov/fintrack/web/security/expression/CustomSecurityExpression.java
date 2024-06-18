@@ -30,7 +30,8 @@ public class CustomSecurityExpression {
         Long userId = getAuthenticatedUserId();
         boolean isOwner = walletService.isOwnerOfWallet(userId, walletId);
         boolean isMember = walletService.isMemberOfWallet(userId, walletId);
-        return isOwner || isMember;
+        boolean isAdmin = hasAnyRole(Role.ROLE_ADMIN);
+        return isOwner || isMember || isAdmin;
     }
 
     public boolean hasAccessToWallets(List<Long> walletIds) {
@@ -39,7 +40,16 @@ public class CustomSecurityExpression {
 
     public boolean hasAccessToBudget(Long budgetId) {
         Long userId = getAuthenticatedUserId();
-        return budgetService.isOwnerOfBudget(userId, budgetId);
+        boolean isAdmin = hasAnyRole(Role.ROLE_ADMIN);
+        boolean isOwner = budgetService.isOwnerOfBudget(userId, budgetId);
+        return isAdmin || isOwner;
+    }
+
+    public boolean hasAccessToTransaction(final Long transactionId) {
+        Long userId = getAuthenticatedUserId();
+        boolean isAdmin = hasAnyRole(Role.ROLE_ADMIN);
+        boolean isOwner = transactionService.isOwnerOfTransaction(userId, transactionId);
+        return isAdmin || isOwner;
     }
 
     private boolean hasAnyRole(final Role... roles) {
@@ -51,11 +61,6 @@ public class CustomSecurityExpression {
             }
         }
         return false;
-    }
-
-    public boolean isOwnerOfTransaction(final Long transactionId) {
-        Long userId = getAuthenticatedUserId();
-        return transactionService.isOwnerOfTransaction(userId, transactionId);
     }
 
     private Long getAuthenticatedUserId() {

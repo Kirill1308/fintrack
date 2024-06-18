@@ -1,4 +1,4 @@
-package com.popov.fintrack.event;
+package com.popov.fintrack.email.event;
 
 import com.popov.fintrack.wallet.dto.InvitationRequest;
 

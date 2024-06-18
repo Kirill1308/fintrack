@@ -25,4 +25,3 @@ public class InvitationRequest implements Serializable {
     @Email(message = "Recipient email should be valid")
     private String recipientEmail;
 }
-

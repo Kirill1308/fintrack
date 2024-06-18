@@ -23,7 +23,6 @@ spring:
   liquibase:
     change-log: classpath:db-init/liquibase/db.changelog.yaml
     enabled: true
-    default-schema: fintrack
   mail:
     host: ${MAIL_HOST}
     port: ${MAIL_PORT}

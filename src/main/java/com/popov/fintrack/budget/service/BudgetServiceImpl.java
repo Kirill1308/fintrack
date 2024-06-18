@@ -121,9 +121,10 @@ public class BudgetServiceImpl implements BudgetService {
         List<Long> walletIds = budget.getWallets().stream()
                 .map(Wallet::getId)
                 .toList();
-        DateRange dateRange = new DateRange();
-        dateRange.setStartDate(budget.getStartDate());
-        dateRange.setEndDate(budget.getEndDate());
+        DateRange dateRange = DateRange.builder()
+                .startDate(budget.getStartDate())
+                .endDate(budget.getEndDate())
+                .build();
 
         filters.setWalletIds(walletIds);
         filters.setDateRange(dateRange);

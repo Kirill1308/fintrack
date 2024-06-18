@@ -1,9 +1,11 @@
 package com.popov.fintrack.transaction.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Schema(description = "DTO representing a range of amounts with a minimum and a maximum value.")
 public class AmountRange {
 

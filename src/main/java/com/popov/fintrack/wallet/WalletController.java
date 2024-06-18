@@ -1,5 +1,6 @@
 package com.popov.fintrack.wallet;
 
+import com.popov.fintrack.utills.validation.OnUpdate;
 import com.popov.fintrack.wallet.dto.WalletDTO;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.WalletMapper;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,7 +62,7 @@ public class WalletController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping
-    public WalletDTO createWallet(@RequestBody WalletDTO walletDTO) {
+    public WalletDTO createWallet(@Validated @RequestBody WalletDTO walletDTO) {
         log.info("Creating wallet with details: {}", walletDTO);
         Wallet wallet = walletMapper.toEntity(walletDTO);
         Wallet createdWallet = walletService.createWallet(wallet);
@@ -80,7 +82,7 @@ public class WalletController {
     })
     @PutMapping
     @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletDTO.id)")
-    public WalletDTO updateWallet(@RequestBody WalletDTO walletDTO) {
+    public WalletDTO updateWallet(@Validated(OnUpdate.class) @RequestBody WalletDTO walletDTO) {
         log.info("Updating wallet with ID: {}", walletDTO.getId());
         Wallet wallet = walletMapper.toEntity(walletDTO);
         Wallet updatedWallet = walletService.updateWallet(wallet);

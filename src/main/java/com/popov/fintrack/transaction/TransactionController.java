@@ -76,7 +76,7 @@ public class TransactionController {
     }
 
     @GetMapping("/{transactionId}")
-    @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionId)")
+    @PreAuthorize("@customSecurityExpression.hasAccessToTransaction(#transactionId)")
     @Operation(summary = "Get transaction by ID", description = "Retrieve a transaction by its ID")
     @ApiResponses(value = {
             @ApiResponse(description = "Transaction Details", responseCode = "200",
@@ -118,7 +118,7 @@ public class TransactionController {
     }
 
     @PutMapping
-    @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionDTO.id)")
+    @PreAuthorize("@customSecurityExpression.hasAccessToTransaction(#transactionDTO.id)")
     @Operation(summary = "Update a transaction", description = "Update an existing transaction")
     @ApiResponses(value = {
             @ApiResponse(description = "Transaction Details", responseCode = "200",
@@ -138,7 +138,7 @@ public class TransactionController {
     }
 
     @DeleteMapping("/{transactionId}")
-    @PreAuthorize("@customSecurityExpression.isOwnerOfTransaction(#transactionId)")
+    @PreAuthorize("@customSecurityExpression.hasAccessToTransaction(#transactionId)")
     @Operation(summary = "Delete a transaction", description = "Delete a transaction by its ID")
     @ApiResponses(value = {
             @ApiResponse(description = "Transaction deleted successfully", responseCode = "200"),

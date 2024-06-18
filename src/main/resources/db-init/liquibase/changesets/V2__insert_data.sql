@@ -6,8 +6,8 @@ VALUES ('John Doe', 'johndoe@gmail.com', '$2a$10$Xl0yhvzLIaJCDdKBS0Lld.ksK7c2Zyt
        ('Mike Smith', 'mikesmith@yahoo.com', '$2a$10$fFLij9aYgaNCFPTL9WcA/uoCRukxnwf.vOQ8nrEEOskrCNmGsxY7m',
         '987654321', '1995-02-10', null, 'MALE', 'ACTIVE', '2022-01-01 00:00:00', '2022-01-01 00:00:00'),
 
-       ('Kirill Popov', 'kpopov151@gmail.com', '$2a$10$Xl0yhvzLIaJCDdKBS0Lld.ksK7c2Zytg/ZKFdtIYYQUv8rUfvCR4W',
-        '123456789', '1990-01-05', null, 'MALE', 'ACTIVE', '2022-01-01 00:00:00', '2022-01-01 00:00:00');
+       ('Bob Brown', 'bobbrown@example.com', '$2a$10$SomeHashedPassword', '555555555',
+        '1990-03-15', null, 'MALE', 'ACTIVE', '2022-01-01 00:00:00', '2022-01-01 00:00:00');
 
 INSERT INTO users_roles (user_id, role)
 VALUES (1, 'ROLE_ADMIN'),
@@ -18,7 +18,7 @@ VALUES (1, 'ROLE_ADMIN'),
 INSERT INTO wallet (user_id, name, balance, currency)
 VALUES (1, 'John Wallet', 1000.00, 'USD'),
        (2, 'Mike Wallet', 5000.00, 'USD'),
-       (3, 'Kirill Wallet', 1500.00, 'USD');
+       (3, 'Bob Wallet', 1500.00, 'USD');
 
 INSERT INTO transaction (user_id, wallet_id, type, category, payment, amount, currency, note, date_created,
                          date_updated)

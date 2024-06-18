@@ -2,11 +2,13 @@ package com.popov.fintrack.transaction.dto;
 
 import com.popov.fintrack.transaction.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Schema(description = "DTO for filtering financial data based on various criteria.")
 public class FilterDTO {
 

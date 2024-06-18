@@ -2,11 +2,13 @@ package com.popov.fintrack.transaction.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @Schema(description = "Paginated response containing a list of items and pagination details")
 public class PaginatedResponse<T> {

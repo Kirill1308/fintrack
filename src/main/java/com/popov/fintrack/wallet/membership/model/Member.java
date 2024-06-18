@@ -15,9 +15,9 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Entity
+@Table(name = "wallet_member")
 @Getter
 @Setter
-@Table(name = "wallet_member")
 public class Member implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

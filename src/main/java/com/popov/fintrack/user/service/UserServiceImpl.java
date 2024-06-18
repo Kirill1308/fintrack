@@ -61,13 +61,13 @@ public class UserServiceImpl implements UserService {
             )
     })
     public User createUser(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalStateException("User already exists.");
-        }
         if (!user.getPassword().equals(user.getPasswordConfirm())) {
             throw new IllegalStateException(
                     "Password and password confirmation do not match."
             );
+        }
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalStateException("User already exists.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Set<Role> roles = Set.of(Role.ROLE_USER);

@@ -2,14 +2,18 @@ package com.popov.fintrack.summary.dto;
 
 import com.popov.fintrack.transaction.model.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Month;
 import java.util.Map;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "Summary of yearly financial data including expenses, income, and various monthly breakdowns.")
 public class YearlySummary {
 
@@ -20,38 +24,38 @@ public class YearlySummary {
     private long walletId;
 
     @Schema(description = "Total expenses for the year", example = "18000.50")
-    private final Double totalExpenses;
+    private Double totalExpenses;
 
     @Schema(description = "Month with the highest expenses", example = "JULY")
-    private final Month mostExpensiveMonth;
+    private Month mostExpensiveMonth;
 
     @Schema(description = "Month with the lowest expenses", example = "FEBRUARY")
-    private final Month leastExpensiveMonth;
+    private Month leastExpensiveMonth;
 
     @Schema(description = "Average monthly expenses for the year", example = "1500.00")
-    private final Double averageMonthlyExpense;
+    private Double averageMonthlyExpense;
 
     @Schema(description = "Total income for the year", example = "20000.00")
-    private final Double totalIncome;
+    private Double totalIncome;
 
     @Schema(description = "Month with the highest income", example = "DECEMBER")
-    private final Month highestIncomeMonth;
+    private Month highestIncomeMonth;
 
     @Schema(description = "Month with the lowest income", example = "JANUARY")
-    private final Month lowestIncomeMonth;
+    private Month lowestIncomeMonth;
 
     @Schema(description = "Average monthly income for the year", example = "1666.67")
-    private final Double averageMonthlyIncome;
+    private Double averageMonthlyIncome;
 
     @Schema(description = "Map of expenses per month")
-    private final Map<Month, Double> expensesPerMonth;
+    private Map<Month, Double> expensesPerMonth;
 
     @Schema(description = "Map of incomes per month")
-    private final Map<Month, Double> incomesPerMonth;
+    private Map<Month, Double> incomesPerMonth;
 
     @Schema(description = "Map of expenses per category")
-    private final Map<Category, Double> expensesPerCategory;
+    private Map<Category, Double> expensesPerCategory;
 
     @Schema(description = "Map of incomes per category")
-    private final Map<Category, Double> incomePerCategory;
+    private Map<Category, Double> incomePerCategory;
 }

@@ -82,7 +82,10 @@ public class WalletServiceImpl implements WalletService {
     @Override
     @Transactional
     public Wallet updateWallet(Wallet wallet) {
-        return walletRepository.save(wallet);
+        Wallet existingWallet = walletRepository.findById(wallet.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet not found"));
+
+        return walletRepository.save(existingWallet);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.popov.fintrack.wallet.membership;
 
-import com.popov.fintrack.event.ExclusionEvent;
-import com.popov.fintrack.event.InvitationConfirmEvent;
+import com.popov.fintrack.email.event.ExclusionEvent;
+import com.popov.fintrack.email.event.InvitationConfirmEvent;
 import com.popov.fintrack.exception.DataConflictException;
 import com.popov.fintrack.user.UserService;
 import com.popov.fintrack.user.dto.user.UserDTO;

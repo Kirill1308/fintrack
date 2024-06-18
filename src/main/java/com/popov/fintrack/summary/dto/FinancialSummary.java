@@ -1,13 +1,15 @@
 package com.popov.fintrack.summary.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "Summary of financial data including balance, total change, expenses, and income.")
 public class FinancialSummary {
 

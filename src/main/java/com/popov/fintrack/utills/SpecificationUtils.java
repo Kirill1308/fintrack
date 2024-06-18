@@ -18,12 +18,12 @@ public final class SpecificationUtils {
     public static Specification<Transaction> buildSpecification(FilterDTO filters, Type transactionType) {
         Specification<Transaction> spec = Specification.where(null);
 
-        spec = SpecificationUtils.applyUserFilter(spec, filters.getUserIds());
-        spec = SpecificationUtils.applyWalletFilter(spec, filters.getWalletIds());
-        spec = SpecificationUtils.applyDateRangeFilter(spec, filters.getDateRange());
-        spec = SpecificationUtils.applyCategoryFilter(spec, filters.getCategories());
-        spec = SpecificationUtils.applyAmountRangeFilter(spec, filters.getAmountRange());
-        spec = SpecificationUtils.applyNoteFilter(spec, filters.getNote());
+        spec = applyUserFilter(spec, filters.getUserIds());
+        spec = applyWalletFilter(spec, filters.getWalletIds());
+        spec = applyDateRangeFilter(spec, filters.getDateRange());
+        spec = applyCategoryFilter(spec, filters.getCategories());
+        spec = applyAmountRangeFilter(spec, filters.getAmountRange());
+        spec = applyNoteFilter(spec, filters.getNote());
 
         if (transactionType != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("type"), transactionType.name()));

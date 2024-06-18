@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Lazy))
 public class ApplicationConfig {
     private final JwtTokenProvider jwtTokenProvider;
@@ -73,17 +75,17 @@ public class ApplicationConfig {
                         .description("""
                                 This API provides a comprehensive set of endpoints to manage financial data, including wallets, budgets, transactions, user profiles, and wallet members.
                                 It supports creating, updating, and retrieving information for financial planning and tracking purposes.
-                                                            
+                                                                
                                 Key Features:
                                 - **Wallet Management:** Create, update, delete, and retrieve wallet information. Manage members of a wallet by inviting users to join, accepting invitations, and excluding members from the wallet.
                                 - **Budget Management:** Manage budgets associated with wallets, including creating, updating, and deleting budgets.
                                 - **Transaction Management:** Add, update, retrieve, and delete financial transactions.
                                 - **User Profile Management:** Manage user profiles, including uploading and updating profile images.
                                 - **Reporting:** Generate comprehensive financial reports in various formats (PDF, XLSX).
-                                                            
+                                                                
                                 Security:
                                 This API uses JWT (JSON Web Token) for authentication and authorization. Ensure to include the bearer token in the authorization header for secured endpoints.
-                                                            
+                                                                
                                 Version: 1.0
                                 """)
                         .version("1.0")

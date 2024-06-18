@@ -9,11 +9,14 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class BudgetDTO {
 
     @Schema(description = "Unique identifier of the budget", example = "1", accessMode = Schema.AccessMode.READ_WRITE)
