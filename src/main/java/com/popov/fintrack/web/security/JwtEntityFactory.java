@@ -2,6 +2,8 @@ package com.popov.fintrack.web.security;
 
 import com.popov.fintrack.user.model.Role;
 import com.popov.fintrack.user.model.User;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -9,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JwtEntityFactory {
 
     public static JwtEntity create(final User user) {

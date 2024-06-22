@@ -5,34 +5,30 @@ import com.popov.fintrack.transaction.TransactionRepository;
 import com.popov.fintrack.transaction.TransactionService;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Transaction;
+import com.popov.fintrack.user.model.User;
+import com.popov.fintrack.user.service.UserServiceImpl;
 import com.popov.fintrack.utills.SpecificationUtils;
-import com.popov.fintrack.wallet.WalletService;
-import com.popov.fintrack.wallet.model.Wallet;
+import com.popov.fintrack.web.security.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
-    private final WalletService walletService;
+    private final UserServiceImpl userService;
     private final TransactionRepository transactionRepository;
 
     @Override
     @Transactional(readOnly = true)
     public Page<Transaction> getFilteredTransactions(FilterDTO filters, Pageable pageable) {
-        Specification<Transaction> spec = Specification.where(null);
-
-        spec = SpecificationUtils.applyWalletFilter(spec, filters.getWalletIds());
-        spec = SpecificationUtils.applyCategoryFilter(spec, filters.getCategories());
-        spec = SpecificationUtils.applyDateRangeFilter(spec, filters.getDateRange());
-        spec = SpecificationUtils.applyAmountRangeFilter(spec, filters.getAmountRange());
-        spec = SpecificationUtils.applyNoteFilter(spec, filters.getNote());
-
+        Specification<Transaction> spec = SpecificationUtils.buildSpecification(filters, null);
         return transactionRepository.findAll(spec, pageable);
     }
 
@@ -45,7 +41,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public Transaction update(Transaction transaction) {
+    public Transaction createTransaction(Transaction transaction) {
+        Long userId = SecurityUtils.getAuthenticatedUserId();
+        User user = userService.getUserById(userId);
+        transaction.setOwner(user);
+        return transactionRepository.save(transaction);
+    }
+
+    @Override
+    @Transactional
+    public Transaction updateTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
@@ -57,12 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isOwnerOfTransaction(Long userId, Long transactionId) {
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
-
-        Wallet wallet = walletService.getWalletById(transaction.getWalletId());
-
-        return wallet.getUser().getId().equals(userId);
+    public boolean isOwnerOfTransaction(Long transactionId, Long userId) {
+        return transactionRepository.existsByIdAndOwnerId(transactionId, userId);
     }
 }

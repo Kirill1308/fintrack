@@ -18,7 +18,6 @@ public class ReportService {
         ReportType detectedFormat = ReportType.valueOf(format.toUpperCase());
         return switch (detectedFormat) {
             case PDF -> reportGenerator.createYearlyPdfReport(year, walletId);
-            case CSV -> reportGenerator.createYearlyCsvReport(year, walletId);
             case XLSX -> reportGenerator.createYearlyXlsxReport(year, walletId);
         };
     }
@@ -27,7 +26,6 @@ public class ReportService {
         ReportType detectedFormat = ReportType.valueOf(format.toUpperCase());
         return switch (detectedFormat) {
             case PDF -> reportGenerator.createMonthlyPdfReport(year, month, walletId);
-            case CSV -> reportGenerator.createMonthlyCsvReport(year, month, walletId);
             case XLSX -> reportGenerator.createMonthlyXlsxReport(year, month, walletId);
         };
     }
@@ -36,7 +34,6 @@ public class ReportService {
         ReportType detectedFormat = ReportType.valueOf(format.toUpperCase());
         return switch (detectedFormat) {
             case PDF -> reportGenerator.createCustomPdfReport(dateRange, walletId);
-            case CSV -> reportGenerator.createCustomCsvReport(dateRange, walletId);
             case XLSX -> reportGenerator.createCustomXlsxReport(dateRange, walletId);
         };
     }

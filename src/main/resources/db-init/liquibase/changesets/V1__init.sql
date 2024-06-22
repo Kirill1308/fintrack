@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS budget_wallet;
+DROP TABLE IF EXISTS budget;
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS wallet_member;
+DROP TABLE IF EXISTS wallet;
+DROP TABLE IF EXISTS users_roles;
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE IF NOT EXISTS users
 (
     id            BIGSERIAL PRIMARY KEY,
@@ -24,57 +32,60 @@ CREATE TABLE IF NOT EXISTS users_roles
 CREATE TABLE IF NOT EXISTS wallet
 (
     id       BIGSERIAL PRIMARY KEY,
-    user_id  BIGINT NOT NULL,
-    name     VARCHAR(255),
+    user_id  BIGINT       NOT NULL,
+    name     VARCHAR(255) NOT NULL,
     balance  DOUBLE PRECISION,
-    currency VARCHAR(3),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    currency VARCHAR(3)   NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS wallet_member
+(
+    id        BIGSERIAL PRIMARY KEY,
+    user_id   BIGINT NOT NULL,
+    wallet_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (wallet_id) REFERENCES wallet (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS transaction
 (
     id           BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    wallet_id    BIGINT NOT NULL,
-    type         VARCHAR(255),
-    category     VARCHAR(255),
-    payment      VARCHAR(255),
-    amount       NUMERIC,
-    currency     VARCHAR(3),
+    user_id      BIGINT       NOT NULL,
+    wallet_id    BIGINT       NOT NULL,
+    type         VARCHAR(255) NOT NULL,
+    category     VARCHAR(255) NOT NULL,
+    payment      VARCHAR(255) NOT NULL,
+    amount       NUMERIC      NOT NULL,
+    currency     VARCHAR(3)   NOT NULL,
     note         TEXT,
     date_created TIMESTAMP,
     date_updated TIMESTAMP,
-    FOREIGN KEY (wallet_id) REFERENCES wallet (id)
-);
-
-CREATE TABLE invitation
-(
-    id           BIGSERIAL PRIMARY KEY,
-    token        VARCHAR(255) NOT NULL,
-    wallet_id    BIGINT       NOT NULL,
-    sender_id    BIGINT       NOT NULL,
-    recipient_id BIGINT       NOT NULL,
-    status       VARCHAR(50)  NOT NULL,
-    created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (wallet_id) REFERENCES wallet (id),
-    FOREIGN KEY (sender_id) REFERENCES users (id),
-    FOREIGN KEY (recipient_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (wallet_id) REFERENCES wallet (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS budget
 (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+    id               BIGSERIAL PRIMARY KEY,
+    user_id          BIGINT           NOT NULL,
+    name             VARCHAR(255)     NOT NULL,
+    budgeted_amount  DOUBLE PRECISION NOT NULL,
+    currency         VARCHAR(255)     NOT NULL,
+    category         VARCHAR(255)     NOT NULL,
+    status           VARCHAR(255),
+    start_date       DATE,
+    end_date         DATE,
+    creation_date    TIMESTAMP,
+    last_update_date TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS budget_wallet
+(
+    budget_id BIGINT NOT NULL,
     wallet_id BIGINT NOT NULL,
-    name VARCHAR(255),
-    budgeted_amount DOUBLE PRECISION,
-    currency VARCHAR(255),
-    category VARCHAR(255),
-    status VARCHAR(255),
-    start_date DATE,
-    end_date DATE,
-    creation_date DATE,
-    last_update_date DATE,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (wallet_id) REFERENCES wallet (id)
+    PRIMARY KEY (budget_id, wallet_id),
+    FOREIGN KEY (budget_id) REFERENCES budget (id) ON DELETE CASCADE,
+    FOREIGN KEY (wallet_id) REFERENCES wallet (id) ON DELETE CASCADE
 );

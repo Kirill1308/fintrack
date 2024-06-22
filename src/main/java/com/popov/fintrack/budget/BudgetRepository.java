@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
-    List<Budget> findByUserId(Long userId);
+    boolean existsByIdAndOwnerId(Long budgetId, Long userId);
 
-    boolean existsByUserIdAndId(Long userId, Long budgetId);
+    List<Budget> findByOwnerId(Long userId);
 }

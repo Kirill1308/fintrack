@@ -2,12 +2,12 @@ package com.popov.fintrack.web.security.expression;
 
 import com.popov.fintrack.budget.BudgetService;
 import com.popov.fintrack.transaction.TransactionService;
+import com.popov.fintrack.transaction.model.Transaction;
 import com.popov.fintrack.user.model.Role;
-import com.popov.fintrack.wallet.InvitationService;
 import com.popov.fintrack.wallet.WalletService;
-import com.popov.fintrack.wallet.model.Invitation;
 import com.popov.fintrack.web.security.JwtEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,57 +17,42 @@ import java.util.List;
 
 @Service("customSecurityExpression")
 @RequiredArgsConstructor
+@Slf4j
 public class CustomSecurityExpression {
 
     private final WalletService walletService;
     private final BudgetService budgetService;
     private final TransactionService transactionService;
-    private final InvitationService invitationService;
 
     public boolean hasAccessUser(final Long id) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
-
+        Long userId = getAuthenticatedUserId();
         return userId.equals(id) || hasAnyRole(Role.ROLE_ADMIN);
     }
 
-    public boolean hasAccessToWallet(Long walletId) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
+    public boolean hasAccessToWallets(final List<Long> walletIds) {
+        return walletIds.stream().allMatch(this::hasAccessToWallet);
+    }
 
+    public boolean hasAccessToWallet(final Long walletId) {
+        Long userId = getAuthenticatedUserId();
         boolean isOwner = walletService.isOwnerOfWallet(userId, walletId);
-        List<Invitation> invitations = invitationService.getAcceptedInvitations(userId);
-        boolean hasBeenInvited = invitations.stream().anyMatch(invitation -> invitation.getWallet().getId().equals(walletId));
-        return isOwner || hasBeenInvited;
+        boolean isMember = walletService.isMemberOfWallet(userId, walletId);
+        return isOwner || isMember;
     }
 
-    public boolean hasAccessToWallets(List<Long> walletIds) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
-
-        for (Long walletId : walletIds) {
-            boolean isOwner = walletService.isOwnerOfWallet(userId, walletId);
-            List<Invitation> invitations = invitationService.getAcceptedInvitations(userId);
-            boolean hasBeenInvited = invitations.stream().anyMatch(invitation -> invitation.getWallet().getId().equals(walletId));
-            if (!(isOwner || hasBeenInvited)) {
-                return false;
-            }
-        }
-
-        return true;
+    public boolean hasAccessToBudget(final Long budgetId) {
+        Long userId = getAuthenticatedUserId();
+        return budgetService.isOwnerOfBudget(userId, budgetId);
     }
 
-    public boolean hasAccessToBudget(Long budgetId) {
-        JwtEntity user = getPrincipal();
-        Long userId = user.getId();
+    public boolean hasAccessToTransaction(final Long transactionId) {
+        Long userId = getAuthenticatedUserId();
+        System.out.println("userId: " + userId + " transactionId: " + transactionId);
 
-        boolean isOwner = budgetService.isOwnerOfBudget(userId, budgetId);
-        List<Invitation> invitations = invitationService.getAcceptedInvitations(userId);
-        boolean hasBeenInvited = invitations.stream()
-                .flatMap(invitation -> invitation.getWallet().getBudgets().stream())
-                .anyMatch(budget -> budget.getId().equals(budgetId));
+        boolean isOwner = transactionService.isOwnerOfTransaction(transactionId, userId);
+        System.out.println("isOwner: " + isOwner);
 
-        return isOwner || hasBeenInvited;
+        return isOwner;
     }
 
     private boolean hasAnyRole(final Role... roles) {
@@ -79,11 +64,6 @@ public class CustomSecurityExpression {
             }
         }
         return false;
-    }
-
-    public boolean isOwnerOfTransaction(final Long transactionId) {
-        Long userId = getAuthenticatedUserId();
-        return transactionService.isOwnerOfTransaction(userId, transactionId);
     }
 
     private Long getAuthenticatedUserId() {

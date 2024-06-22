@@ -1,14 +1,15 @@
 package com.popov.fintrack.summary;
 
+import com.popov.fintrack.report.service.ExpenseService;
+import com.popov.fintrack.report.service.IncomeService;
 import com.popov.fintrack.summary.dto.CustomSummary;
 import com.popov.fintrack.summary.dto.FinancialSummary;
 import com.popov.fintrack.summary.dto.MonthlySummary;
 import com.popov.fintrack.summary.dto.YearlySummary;
-import com.popov.fintrack.report.service.ExpenseService;
-import com.popov.fintrack.report.service.IncomeService;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Category;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.time.Month;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SummaryDataFetcher {
@@ -24,6 +26,7 @@ public class SummaryDataFetcher {
     private final IncomeService incomeService;
 
     public FinancialSummary fetchFinancialSummary(FilterDTO filters) {
+        log.info("Fetching financial summary with filters: {}", filters);
         Double currentBalance = getWalletsBalance(filters.getWalletIds());
         Double totalExpenses = expenseService.getTotalFilteredExpenses(filters);
         Double totalIncome = incomeService.getTotalFilteredIncome(filters);
@@ -37,6 +40,7 @@ public class SummaryDataFetcher {
     }
 
     public CustomSummary fetchCustomData(FilterDTO filters) {
+        log.info("Fetching custom data with filters: {}", filters);
         Double totalExpenses = expenseService.getTotalFilteredExpenses(filters);
         Double totalIncome = incomeService.getTotalFilteredIncome(filters);
         Double averageDailyExpense = expenseService.getAverageDailyExpense(filters);
@@ -49,6 +53,7 @@ public class SummaryDataFetcher {
         Map<Category, Double> incomePerCategory = incomeService.getIncomePerCategory(filters);
 
         return CustomSummary.builder()
+                .walletId(filters.getWalletIds().get(0))
                 .startDate(filters.getDateRange().getStartDate())
                 .endDate(filters.getDateRange().getEndDate())
                 .totalExpenses(totalExpenses)
@@ -63,6 +68,7 @@ public class SummaryDataFetcher {
     }
 
     public YearlySummary fetchYearlyData(int year, Long walletId) {
+        log.info("Fetching yearly data for year: {} and wallet ID: {}", year, walletId);
         Double totalExpenses = expenseService.getTotalExpensesForYear(year, walletId);
         Month mostExpensiveMonth = expenseService.getMostExpensiveMonth(year, walletId);
         Month leastExpensiveMonth = expenseService.getLeastExpensiveMonth(year, walletId);
@@ -81,6 +87,7 @@ public class SummaryDataFetcher {
 
         return YearlySummary.builder()
                 .year(year)
+                .walletId(walletId)
                 .totalExpenses(totalExpenses)
                 .mostExpensiveMonth(mostExpensiveMonth)
                 .leastExpensiveMonth(leastExpensiveMonth)
@@ -97,6 +104,7 @@ public class SummaryDataFetcher {
     }
 
     public MonthlySummary fetchMonthlyData(int year, Month month, Long walletId) {
+        log.info("Fetching monthly data for year: {}, month: {} and wallet ID: {}", year, month, walletId);
         Double totalExpenses = expenseService.getTotalExpensesForMonth(year, month, walletId);
         Double totalIncome = incomeService.getTotalIncomeForMonth(year, month, walletId);
         Double averageDailyExpense = expenseService.getAverageDailyExpense(year, month, walletId);
@@ -109,6 +117,7 @@ public class SummaryDataFetcher {
         return MonthlySummary.builder()
                 .year(year)
                 .month(month)
+                .walletId(walletId)
                 .totalExpenses(totalExpenses)
                 .totalIncome(totalIncome)
                 .averageDailyExpense(averageDailyExpense)
@@ -121,6 +130,7 @@ public class SummaryDataFetcher {
     }
 
     private Double getWalletsBalance(List<Long> walletIds) {
+        log.info("Fetching wallets balance for wallet IDs: {}", walletIds);
         return walletIds.stream()
                 .mapToDouble(walletId -> expenseService.getTotalExpensesForYear(LocalDate.now().getYear(), walletId) -
                                          incomeService.getTotalIncomeForYear(LocalDate.now().getYear(), walletId))

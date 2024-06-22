@@ -8,15 +8,15 @@ public interface BudgetService {
 
     Budget getBudgetById(Long budgetId);
 
-    List<Budget> getBudgetsByUserId(Long userId);
+    List<Budget> getBudgets(Long userId);
 
-    Budget createBudget(Budget budget);
+    List<Budget> getOwnedBudgets(Long userId);
+
+    List<Budget> getMemberBudgets(Long userId);
+
+    boolean isOwnerOfBudget(Long userId, Long budgetId);
 
     Budget updateBudget(Budget budget);
 
     void deleteBudget(Long budgetId);
-
-    boolean isOwnerOfBudget(Long userId, Long budgetId);
-
-    List<Budget> getInvitedBudgets(Long userId);
 }

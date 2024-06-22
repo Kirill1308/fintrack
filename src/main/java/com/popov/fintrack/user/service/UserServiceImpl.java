@@ -1,8 +1,7 @@
 package com.popov.fintrack.user.service;
 
 import com.popov.fintrack.email.MailService;
-import com.popov.fintrack.email.props.MailProperties;
-import com.popov.fintrack.email.utils.MailType;
+import com.popov.fintrack.email.MailType;
 import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.user.ImageService;
 import com.popov.fintrack.user.UserRepository;
@@ -30,15 +29,13 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ImageService imageService;
     private final MailService mailService;
-    private final MailProperties mailProperties;
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "UserService::getByUsername", key = "#username")
     public User getByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
     }
 
     @Override
@@ -63,14 +60,14 @@ public class UserServiceImpl implements UserService {
                     key = "#user.username"
             )
     })
-    public User create(User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalStateException("User already exists.");
-        }
+    public User createUser(User user) {
         if (!user.getPassword().equals(user.getPasswordConfirm())) {
             throw new IllegalStateException(
                     "Password and password confirmation do not match."
             );
+        }
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalStateException("User already exists.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Set<Role> roles = Set.of(Role.ROLE_USER);
@@ -86,7 +83,7 @@ public class UserServiceImpl implements UserService {
             @CachePut(value = "UserService::getUserById", key = "#user.id"),
             @CachePut(value = "UserService::getByUsername", key = "#user.username")
     })
-    public User update(User user) {
+    public User updateUser(User user) {
         User existing = getUserById(user.getId());
         existing.setName(user.getName());
         user.setUsername(user.getUsername());

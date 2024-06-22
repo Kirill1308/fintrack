@@ -1,6 +1,5 @@
 package com.popov.fintrack.email;
 
-import com.popov.fintrack.email.utils.MailType;
 import com.popov.fintrack.user.model.User;
 
 import java.util.Properties;

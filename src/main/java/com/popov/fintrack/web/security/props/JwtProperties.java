@@ -1,11 +1,13 @@
 package com.popov.fintrack.web.security.props;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@Data
+@Getter
+@Setter
 @ConfigurationProperties(prefix = "security.jwt")
 public class JwtProperties {
     private String secret;

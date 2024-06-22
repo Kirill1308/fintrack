@@ -7,6 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ReportType {
     PDF,
-    CSV,
     XLSX
 }
