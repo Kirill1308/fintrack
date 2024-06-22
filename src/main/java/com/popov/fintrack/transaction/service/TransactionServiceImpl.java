@@ -62,11 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isOwnerOfTransaction(Long userId, Long transactionId) {
-        log.debug("Checking if user with id {} is owner of transaction with id {}", userId, transactionId);
-        Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
-
-        return transaction.getOwner().getId().equals(userId);
+    public boolean isOwnerOfTransaction(Long transactionId, Long userId) {
+        return transactionRepository.existsByIdAndOwnerId(transactionId, userId);
     }
 }

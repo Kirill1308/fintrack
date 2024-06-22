@@ -51,8 +51,7 @@ public class TransactionController {
                     content = @Content(schema = @Schema(implementation = PaginatedResponse.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public PaginatedResponse<TransactionDTO> getFilteredTransactions(
             @RequestBody @Parameter(description = "Filter criteria for transactions") FilterDTO filters,
@@ -83,15 +82,12 @@ public class TransactionController {
                     content = @Content(schema = @Schema(implementation = TransactionDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public TransactionDTO getTransactionById(@PathVariable @Parameter(description = "ID of the transaction to retrieve") Long transactionId) {
         log.info("Request to get transaction by ID: {}", transactionId);
         Transaction transaction = transactionService.getTransaction(transactionId);
-        TransactionDTO transactionDTO = transactionMapper.toDto(transaction);
-        log.info("Retrieved transaction: {}", transactionDTO);
-        return transactionDTO;
+        return transactionMapper.toDto(transaction);
     }
 
     @PostMapping("/{walletId}")
@@ -102,8 +98,7 @@ public class TransactionController {
                     content = @Content(schema = @Schema(implementation = TransactionDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public TransactionDTO createTransaction(@PathVariable @Parameter(description = "ID of the wallet to create the transaction for") Long walletId,
                                             @RequestBody @Parameter(description = "Transaction details") TransactionDTO transactionDTO) {
@@ -125,8 +120,7 @@ public class TransactionController {
                     content = @Content(schema = @Schema(implementation = TransactionDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public TransactionDTO updateTransaction(@RequestBody @Parameter(description = "Updated transaction details") TransactionDTO transactionDTO) {
         log.info("Request to update transaction: {}", transactionDTO);
@@ -144,8 +138,7 @@ public class TransactionController {
             @ApiResponse(description = "Transaction deleted successfully", responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public void deleteTransaction(@PathVariable @Parameter(description = "ID of the transaction to delete") Long transactionId) {
         log.info("Request to delete transaction by ID: {}", transactionId);

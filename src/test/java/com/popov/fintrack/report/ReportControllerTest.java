@@ -1,17 +1,19 @@
 package com.popov.fintrack.report;
 
 import com.popov.fintrack.AbstractControllerTest;
-import com.popov.fintrack.validation.WithMockJwtUser;
 import com.popov.fintrack.report.service.ReportService;
 import com.popov.fintrack.transaction.dto.DateRange;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.time.Month;
 
 import static com.popov.fintrack.report.ReportTestData.customReportRequest;
 import static com.popov.fintrack.report.ReportTestData.reportRequest;
+import static com.popov.fintrack.user.UserTestData.ADMIN_MAIL;
+import static com.popov.fintrack.user.UserTestData.USER_MAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -28,7 +30,7 @@ class ReportControllerTest extends AbstractControllerTest {
     private ReportService reportService;
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void getYearlyReport_success() throws Exception {
         byte[] reportContent = "PDF content".getBytes();
 
@@ -44,7 +46,7 @@ class ReportControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void getMonthlyReport_success() throws Exception {
         byte[] reportContent = "PDF content".getBytes();
 
@@ -61,7 +63,7 @@ class ReportControllerTest extends AbstractControllerTest {
 
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void getCustomReport_success() throws Exception {
         byte[] reportContent = "PDF content".getBytes();
 

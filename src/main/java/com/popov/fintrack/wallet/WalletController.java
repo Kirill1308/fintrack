@@ -43,13 +43,11 @@ public class WalletController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/{walletId}")
-    @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
+//    @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public WalletDTO getWalletById(@PathVariable Long walletId) {
         log.info("Get wallet by ID: {}", walletId);
         Wallet wallet = walletService.getWalletById(walletId);
-        WalletDTO walletDTO = walletMapper.toDto(wallet);
-        log.info("Wallet details retrieved for ID: {}", walletId);
-        return walletDTO;
+        return walletMapper.toDto(wallet);
     }
 
     @Operation(summary = "Create a new wallet")
@@ -66,9 +64,7 @@ public class WalletController {
         log.info("Creating wallet with details: {}", walletDTO);
         Wallet wallet = walletMapper.toEntity(walletDTO);
         Wallet createdWallet = walletService.createWallet(wallet);
-        WalletDTO createdWalletDTO = walletMapper.toDto(createdWallet);
-        log.info("Wallet created with ID: {}", createdWalletDTO.getId());
-        return createdWalletDTO;
+        return walletMapper.toDto(createdWallet);
     }
 
     @Operation(summary = "Update an existing wallet")
@@ -86,9 +82,7 @@ public class WalletController {
         log.info("Updating wallet with ID: {}", walletDTO.getId());
         Wallet wallet = walletMapper.toEntity(walletDTO);
         Wallet updatedWallet = walletService.updateWallet(wallet);
-        WalletDTO updatedWalletDTO = walletMapper.toDto(updatedWallet);
-        log.info("Wallet updated with ID: {}", updatedWalletDTO.getId());
-        return updatedWalletDTO;
+        return walletMapper.toDto(updatedWallet);
     }
 
     @Operation(summary = "Delete a wallet")

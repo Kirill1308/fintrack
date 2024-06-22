@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS budget_wallet;
+DROP TABLE IF EXISTS budget;
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS wallet_member;
+DROP TABLE IF EXISTS wallet;
+DROP TABLE IF EXISTS users_roles;
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE IF NOT EXISTS users
 (
     id            BIGSERIAL PRIMARY KEY,
@@ -28,7 +36,7 @@ CREATE TABLE IF NOT EXISTS wallet
     name     VARCHAR(255) NOT NULL,
     balance  DOUBLE PRECISION,
     currency VARCHAR(3)   NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS wallet_member
@@ -36,8 +44,8 @@ CREATE TABLE IF NOT EXISTS wallet_member
     id        BIGSERIAL PRIMARY KEY,
     user_id   BIGINT NOT NULL,
     wallet_id BIGINT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (wallet_id) REFERENCES wallet (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (wallet_id) REFERENCES wallet (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS transaction
@@ -53,8 +61,8 @@ CREATE TABLE IF NOT EXISTS transaction
     note         TEXT,
     date_created TIMESTAMP,
     date_updated TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (wallet_id) REFERENCES wallet (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (wallet_id) REFERENCES wallet (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS budget
@@ -70,7 +78,7 @@ CREATE TABLE IF NOT EXISTS budget
     end_date         DATE,
     creation_date    TIMESTAMP,
     last_update_date TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS budget_wallet

@@ -4,6 +4,7 @@ import com.popov.fintrack.budget.BudgetRepository;
 import com.popov.fintrack.budget.model.Budget;
 import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.report.service.ExpenseService;
+import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.user.UserService;
 import com.popov.fintrack.wallet.WalletService;
 import com.popov.fintrack.wallet.model.Wallet;
@@ -68,19 +69,19 @@ class BudgetServiceImplTest {
         budget.setWallets(List.of(wallet));
     }
 
-//    @Test
-//    void getBudgetById_success() {
-//        when(budgetRepository.findById(1L)).thenReturn(Optional.of(budget));
-//        when(expenseService.getTotalFilteredExpenses(any(FilterDTO.class))).thenReturn(500.0);
-//
-//        Budget foundBudget = budgetService.getBudgetById(1L);
-//
-//        assertNotNull(foundBudget);
-//        assertEquals(1L, foundBudget.getId());
-//        assertEquals(500.0, foundBudget.getSpentAmount());
-//        assertEquals(500.0, foundBudget.getRemainingAmount());
-//        verify(budgetRepository, times(1)).findById(1L);
-//    }
+    @Test
+    void getBudgetById_success() {
+        when(budgetRepository.findById(1L)).thenReturn(Optional.of(budget));
+        when(expenseService.getTotalFilteredExpenses(any(FilterDTO.class))).thenReturn(500.0);
+
+        Budget foundBudget = budgetService.getBudgetById(1L);
+
+        assertNotNull(foundBudget);
+        assertEquals(1L, foundBudget.getId());
+        assertEquals(500.0, foundBudget.getSpentAmount());
+        assertEquals(500.0, foundBudget.getRemainingAmount());
+        verify(budgetRepository, times(1)).findById(1L);
+    }
 
     @Test
     void getBudgetById_notFound() {

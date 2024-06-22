@@ -2,22 +2,27 @@ package com.popov.fintrack.user;
 
 import com.popov.fintrack.AbstractControllerTest;
 import com.popov.fintrack.budget.BudgetService;
-import com.popov.fintrack.user.model.User;
-import com.popov.fintrack.validation.WithMockJwtUser;
+import com.popov.fintrack.budget.dto.BudgetDTO;
+import com.popov.fintrack.budget.model.Budget;
 import com.popov.fintrack.wallet.WalletService;
+import com.popov.fintrack.wallet.dto.WalletDTO;
+import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.mapper.BudgetMapper;
 import com.popov.fintrack.web.mapper.WalletMapper;
+import jdk.jfr.Description;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.util.List;
 
 import static com.popov.fintrack.budget.BudgetTestData.budget;
 import static com.popov.fintrack.budget.BudgetTestData.budgetDTO;
-import static com.popov.fintrack.user.UserTestData.USER_ID;
-import static com.popov.fintrack.user.UserTestData.user;
+import static com.popov.fintrack.user.UserTestData.ADMIN_MAIL;
+import static com.popov.fintrack.user.UserTestData.USER1_ID;
+import static com.popov.fintrack.user.UserTestData.USER2_ID;
+import static com.popov.fintrack.user.UserTestData.USER_MAIL;
 import static com.popov.fintrack.user.UserTestData.userDTO;
 import static com.popov.fintrack.wallet.WalletTestData.wallet;
 import static com.popov.fintrack.wallet.WalletTestData.walletDTO;
@@ -32,12 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserControllerTest extends AbstractControllerTest {
 
-    @Mock
-    private UserService userService;
-
-    @MockBean
-    private UserRepository userRepository;
-
     @MockBean
     private WalletService walletService;
 
@@ -51,43 +50,99 @@ class UserControllerTest extends AbstractControllerTest {
     private BudgetMapper budgetMapper;
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
-    void getUserById_success() throws Exception {
-        mockMvc.perform(get("/api/v1/users/{id}", USER_ID)
+    @WithUserDetails(ADMIN_MAIL)
+    @Description("Admin can get information about any user")
+    void getUserById_adminAuth_returnsUserDto() throws Exception {
+        mockMvc.perform(get("/api/v1/users/{id}", USER1_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(user.getId()));
+                .andExpect(jsonPath("$.id").value(userDTO.getId()));
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
+    @Description("User can get information about himself")
+    void getUserById_userAuth_returnsUserDto() throws Exception {
+        mockMvc.perform(get("/api/v1/users/{id}", USER1_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userDTO.getId()));
+    }
+
+    @Test
+    @WithUserDetails(USER_MAIL)
+    @Description("User cannot get information about another user")
+    void getUserById_userAuth_forbidden() throws Exception {
+        mockMvc.perform(get("/api/v1/users/{id}", USER2_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(ADMIN_MAIL)
+    @Description("Admin can delete any user")
     void deleteUserById_success() throws Exception {
-        mockMvc.perform(delete("/api/v1/users/{id}", USER_ID)
+        mockMvc.perform(delete("/api/v1/users/{id}", USER1_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
-    void getWallets_success() throws Exception {
-        given(walletService.getWallets(anyLong())).willReturn(List.of(wallet));
-        given(walletMapper.toDto(any(List.class))).willReturn(List.of(walletDTO));
-
-        mockMvc.perform(get("/api/v1/users/{userId}/wallets", USER_ID)
+    @WithUserDetails(USER_MAIL)
+    @Description("User cannot delete another user")
+    void deleteUserById_forbidden() throws Exception {
+        mockMvc.perform(delete("/api/v1/users/{id}", USER2_ID)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(walletDTO.getId()));
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
-    void getBudgetsByUserId_success() throws Exception {
-        given(budgetService.getBudgets(anyLong())).willReturn(List.of(budget));
-        given(budgetMapper.toDto(any(List.class))).willReturn(List.of(budgetDTO));
+    @WithUserDetails(USER_MAIL)
+    @Description("User can get wallets of himself")
+    void getWallets_userAuth_returnsWalletDtos() throws Exception {
+        List<Wallet> wallets = List.of(wallet);
+        List<WalletDTO> walletDTOs = List.of(walletDTO);
 
-        mockMvc.perform(get("/api/v1/users/{userId}/budgets", 1L)
+        given(walletService.getWallets(anyLong())).willReturn(wallets);
+        given(walletMapper.toDto(any(List.class))).willReturn(walletDTOs);
+
+        mockMvc.perform(get("/api/v1/users/{userId}/wallets", USER1_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(budgetDTO.getId()));
+                .andExpect(jsonPath("$[0].id").value(walletDTOs.get(0).getId()));
+    }
+
+    @Test
+    @WithUserDetails(USER_MAIL)
+    @Description("User cannot get wallets of another user")
+    void getWallets_userAuth_cannotGetWalletsOfAnotherUser() throws Exception {
+        mockMvc.perform(get("/api/v1/users/{userId}/wallets", USER2_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithUserDetails(USER_MAIL)
+    @Description("User can get budgets of himself")
+    void getBudgets_userAuth_returnsBudgetDtos() throws Exception {
+        List<Budget> budgets = List.of(budget);
+        List<BudgetDTO> budgetDTOs = List.of(budgetDTO);
+
+        given(budgetService.getBudgets(anyLong())).willReturn(budgets);
+        given(budgetMapper.toDto(any(List.class))).willReturn(budgetDTOs);
+
+        mockMvc.perform(get("/api/v1/users/{userId}/budgets", USER1_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(budgetDTOs.get(0).getId()));
+    }
+
+    @Test
+    @WithUserDetails(USER_MAIL)
+    @Description("User cannot get budgets of another user")
+    void getBudgets_userAuth_cannotGetBudgetsOfAnotherUser() throws Exception {
+        mockMvc.perform(get("/api/v1/users/{userId}/budgets", USER2_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 }

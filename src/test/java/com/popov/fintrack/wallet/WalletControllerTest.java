@@ -2,7 +2,6 @@ package com.popov.fintrack.wallet;
 
 import com.popov.fintrack.AbstractControllerTest;
 import com.popov.fintrack.JsonUtil;
-import com.popov.fintrack.validation.WithMockJwtUser;
 import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.wallet.dto.WalletDTO;
 import com.popov.fintrack.wallet.model.Wallet;
@@ -11,13 +10,16 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 
+import static com.popov.fintrack.user.UserTestData.USER_MAIL;
 import static com.popov.fintrack.wallet.WalletTestData.WALLET_DTO_MATCHER;
 import static com.popov.fintrack.wallet.WalletTestData.WALLET_ID;
 import static com.popov.fintrack.wallet.WalletTestData.wallet;
 import static com.popov.fintrack.wallet.WalletTestData.walletDTO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,10 +35,11 @@ class WalletControllerTest extends AbstractControllerTest {
     private WalletMapper walletMapper;
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void getWalletById_returnsWalletDto() throws Exception {
-        Mockito.when(walletService.getWalletById(anyLong())).thenReturn(wallet);
-        Mockito.when(walletMapper.toDto(any(Wallet.class))).thenReturn(walletDTO);
+
+        given(walletService.getWalletById(anyLong())).willReturn(wallet);
+        given(walletMapper.toDto(wallet)).willReturn(walletDTO);
 
         mockMvc.perform(get("/api/v1/wallets/{walletId}", WALLET_ID)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -45,7 +48,7 @@ class WalletControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void getWalletById_notFound() throws Exception {
         Mockito.when(walletService.getWalletById(anyLong())).thenThrow(new ResourceNotFoundException("Wallet not found"));
 
@@ -55,7 +58,7 @@ class WalletControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void createWallet_returnsWalletDto() throws Exception {
         Mockito.when(walletService.createWallet(any(Wallet.class))).thenReturn(wallet);
         Mockito.when(walletMapper.toEntity(any(WalletDTO.class))).thenReturn(wallet);
@@ -69,7 +72,7 @@ class WalletControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void createWallet_invalidInput() throws Exception {
         WalletDTO invalidWalletDTO = new WalletDTO();
 
@@ -80,7 +83,7 @@ class WalletControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void updateWallet_returnsWalletDto() throws Exception {
         Mockito.when(walletService.updateWallet(any(Wallet.class))).thenReturn(wallet);
         Mockito.when(walletMapper.toEntity(any(WalletDTO.class))).thenReturn(wallet);
@@ -94,7 +97,7 @@ class WalletControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void deleteWallet_success() throws Exception {
         Mockito.doNothing().when(walletService).deleteWallet(anyLong());
 
@@ -104,7 +107,7 @@ class WalletControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithMockJwtUser(username = "john.doe@example.com", roles = {"USER", "ADMIN"})
+    @WithUserDetails(USER_MAIL)
     void deleteWallet_notFound() throws Exception {
         Mockito.doThrow(new ResourceNotFoundException("Wallet not found")).when(walletService).deleteWallet(anyLong());
 

@@ -10,6 +10,8 @@ import com.popov.fintrack.transaction.dto.DateRange;
 import java.time.LocalDate;
 import java.time.Month;
 
+import static com.popov.fintrack.wallet.WalletTestData.USER_1_WALLET_ID;
+
 public class ReportTestData {
 
     public static final ReportRequest reportRequest;
@@ -24,7 +26,7 @@ public class ReportTestData {
         reportRequest = ReportRequest.builder()
                 .year(2024)
                 .month(Month.JANUARY)
-                .walletId(1L)
+                .walletId(USER_1_WALLET_ID)
                 .format("pdf")
                 .build();
 
@@ -34,14 +36,14 @@ public class ReportTestData {
                 .build();
 
         customReportRequest = CustomReportRequest.builder()
-                .walletId(1L)
+                .walletId(USER_1_WALLET_ID)
                 .format("pdf")
                 .dateRange(dateRange)
                 .build();
 
         yearlySummary = YearlySummary.builder()
                 .year(2024)
-                .walletId(1L)
+                .walletId(2L)
                 .totalExpenses(500.0)
                 .mostExpensiveMonth(Month.JANUARY)
                 .leastExpensiveMonth(Month.FEBRUARY)
@@ -55,7 +57,7 @@ public class ReportTestData {
         monthlySummary = MonthlySummary.builder()
                 .year(2024)
                 .month(Month.JANUARY)
-                .walletId(1L)
+                .walletId(USER_1_WALLET_ID)
                 .totalExpenses(500.0)
                 .totalIncome(1000.0)
                 .averageDailyExpense(20.0)
@@ -67,7 +69,7 @@ public class ReportTestData {
                 .build();
 
         customSummary = CustomSummary.builder()
-                .walletId(1L)
+                .walletId(USER_1_WALLET_ID)
                 .startDate(dateRange.getStartDate())
                 .endDate(dateRange.getEndDate())
                 .totalExpenses(500.0)

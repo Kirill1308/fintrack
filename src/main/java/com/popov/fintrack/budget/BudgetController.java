@@ -56,9 +56,8 @@ public class BudgetController {
             @PathVariable Long budgetId) {
         log.info("Retrieving budget with ID: {}", budgetId);
         Budget budget = budgetService.getBudgetById(budgetId);
-        BudgetDTO budgetDTO = budgetMapper.toDto(budget);
         log.info("Budget retrieved with ID: {}", budgetId);
-        return budgetDTO;
+        return budgetMapper.toDto(budget);
     }
 
     @Operation(summary = "Create a new Budget", description = "Create a new budget")
@@ -79,9 +78,7 @@ public class BudgetController {
         List<Wallet> wallets = walletService.getWalletsByIds(budgetDTO.getWalletIds());
         budget.setWallets(wallets);
         Budget createdBudget = budgetService.updateBudget(budget);
-        BudgetDTO createdBudgetDTO = budgetMapper.toDto(createdBudget);
-        log.info("Budget created with ID: {}", createdBudgetDTO.getId());
-        return createdBudgetDTO;
+        return budgetMapper.toDto(createdBudget);
     }
 
     @Operation(summary = "Update an existing Budget", description = "Update the details of an existing budget")
@@ -101,9 +98,7 @@ public class BudgetController {
         log.info("Updating budget with ID: {}", budgetDTO.getId());
         Budget budget = budgetMapper.toEntity(budgetDTO);
         Budget updatedBudget = budgetService.updateBudget(budget);
-        BudgetDTO updatedBudgetDTO = budgetMapper.toDto(updatedBudget);
-        log.info("Budget updated with ID: {}", updatedBudgetDTO.getId());
-        return updatedBudgetDTO;
+        return budgetMapper.toDto(updatedBudget);
     }
 
     @Operation(summary = "Delete a Budget by ID", description = "Delete a budget by its ID")

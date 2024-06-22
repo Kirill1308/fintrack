@@ -15,4 +15,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Page<Transaction> findAll(Specification<Transaction> spec, Pageable pageable);
 
     List<Transaction> findAll(Specification<Transaction> spec);
+
+    boolean existsByIdAndOwnerId(Long transactionId, Long userId);
 }

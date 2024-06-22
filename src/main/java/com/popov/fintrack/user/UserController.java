@@ -63,8 +63,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = UserDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public UserDTO getById(@PathVariable Long id) {
         log.info("Fetching user details for ID: {}", id);
@@ -80,8 +79,7 @@ public class UserController {
             @ApiResponse(description = "User details updated successfully", responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public UserDTO update(@Validated(OnUpdate.class) @RequestBody UserDTO userDTO) {
         log.info("Updating user details for ID: {}", userDTO.getId());
@@ -97,8 +95,7 @@ public class UserController {
             @ApiResponse(description = "User deleted successfully", responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public void deleteById(@PathVariable Long id) {
         log.info("Deleting user with ID: {}", id);
@@ -111,8 +108,7 @@ public class UserController {
             @ApiResponse(description = "Profile image uploaded successfully", responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public void uploadImage(@Validated @ModelAttribute ProfileImageDTO profileImageDTO) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
@@ -130,8 +126,7 @@ public class UserController {
             @ApiResponse(description = "Profile image updated successfully", responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public void updateImage(@Validated @ModelAttribute ProfileImageDTO profileImageDTO) {
         Long userId = SecurityUtils.getAuthenticatedUserId();
@@ -147,8 +142,7 @@ public class UserController {
             @ApiResponse(description = "Profile image deleted successfully", responseCode = "200"),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public void deleteImage() {
         Long userId = SecurityUtils.getAuthenticatedUserId();
@@ -164,8 +158,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = WalletDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public List<WalletDTO> getWallets(@PathVariable Long userId) {
         log.info("Fetching wallets for user ID: {}", userId);
@@ -181,8 +174,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = BudgetDTO.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Access Denied"),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Access Denied")
     })
     public List<BudgetDTO> getBudgetsByUserId(@PathVariable Long userId) {
         log.info("Fetching budgets for user ID: {}", userId);
