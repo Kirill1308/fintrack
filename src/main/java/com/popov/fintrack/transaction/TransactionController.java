@@ -64,14 +64,12 @@ public class TransactionController {
         Page<Transaction> transactions = transactionService.getFilteredTransactions(filters, pageable);
         List<TransactionDTO> transactionDTOs = transactionMapper.toDto(transactions.getContent());
 
-        PaginatedResponse<TransactionDTO> response = new PaginatedResponse<>(
+        return new PaginatedResponse<>(
                 transactionDTOs,
                 transactions.getTotalPages(),
                 transactions.getTotalElements(),
                 transactions.getNumber()
         );
-        log.info("Retrieved filtered transactions: {}", response);
-        return response;
     }
 
     @GetMapping("/{transactionId}")
@@ -107,9 +105,7 @@ public class TransactionController {
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         transaction.setWallet(wallet);
         Transaction createdTransaction = transactionService.createTransaction(transaction);
-        TransactionDTO createdTransactionDTO = transactionMapper.toDto(createdTransaction);
-        log.info("Created transaction: {}", createdTransactionDTO);
-        return createdTransactionDTO;
+        return transactionMapper.toDto(createdTransaction);
     }
 
     @PutMapping
@@ -122,13 +118,12 @@ public class TransactionController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Access Denied")
     })
-    public TransactionDTO updateTransaction(@RequestBody @Parameter(description = "Updated transaction details") TransactionDTO transactionDTO) {
+    public TransactionDTO updateTransaction(@RequestBody @Parameter(description = "Updated transaction details")
+                                            TransactionDTO transactionDTO) {
         log.info("Request to update transaction: {}", transactionDTO);
         Transaction transaction = transactionMapper.toEntity(transactionDTO);
         Transaction updatedTransaction = transactionService.updateTransaction(transaction);
-        TransactionDTO updatedTransactionDTO = transactionMapper.toDto(updatedTransaction);
-        log.info("Updated transaction: {}", updatedTransactionDTO);
-        return updatedTransactionDTO;
+        return transactionMapper.toDto(updatedTransaction);
     }
 
     @DeleteMapping("/{transactionId}")
@@ -143,6 +138,5 @@ public class TransactionController {
     public void deleteTransaction(@PathVariable @Parameter(description = "ID of the transaction to delete") Long transactionId) {
         log.info("Request to delete transaction by ID: {}", transactionId);
         transactionService.deleteTransaction(transactionId);
-        log.info("Deleted transaction with ID: {}", transactionId);
     }
 }

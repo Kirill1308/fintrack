@@ -1,10 +1,16 @@
-spring.cache.type: none
 spring:
-  init:
-    mode: always
   datasource:
-    url: jdbc:postgresql://${HOST}:5432/${POSTGRES_DATABASE}?currentSchema=${POSTGRES_TEST_SCHEMA}
-    username: postgres
-    password: postgres
-  liquibase:
-    enabled: false
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+  sql:
+    init:
+      platform: h2
+      mode: always

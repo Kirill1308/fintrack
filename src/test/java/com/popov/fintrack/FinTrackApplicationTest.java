@@ -6,4 +6,5 @@ class FinTrackApplicationTest extends BaseTests {
     @Test
     void contextLoads() {
     }
+
 }

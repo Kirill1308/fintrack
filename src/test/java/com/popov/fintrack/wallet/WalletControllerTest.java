@@ -2,24 +2,19 @@ package com.popov.fintrack.wallet;
 
 import com.popov.fintrack.AbstractControllerTest;
 import com.popov.fintrack.JsonUtil;
-import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.wallet.dto.WalletDTO;
-import com.popov.fintrack.wallet.model.Wallet;
-import com.popov.fintrack.web.mapper.WalletMapper;
+import jdk.jfr.Description;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 
 import static com.popov.fintrack.user.UserTestData.USER_MAIL;
+import static com.popov.fintrack.user.UserTestData.WALLET_MEMBER_MAIL;
+import static com.popov.fintrack.wallet.WalletTestData.NOT_EXISTING_WALLET_ID;
+import static com.popov.fintrack.wallet.WalletTestData.SHARED_WALLET_ID;
 import static com.popov.fintrack.wallet.WalletTestData.WALLET_DTO_MATCHER;
 import static com.popov.fintrack.wallet.WalletTestData.WALLET_ID;
-import static com.popov.fintrack.wallet.WalletTestData.wallet;
 import static com.popov.fintrack.wallet.WalletTestData.walletDTO;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,19 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class WalletControllerTest extends AbstractControllerTest {
 
-    @MockBean
-    private WalletService walletService;
-
-    @MockBean
-    private WalletMapper walletMapper;
-
     @Test
     @WithUserDetails(USER_MAIL)
-    void getWalletById_returnsWalletDto() throws Exception {
-
-        given(walletService.getWalletById(anyLong())).willReturn(wallet);
-        given(walletMapper.toDto(wallet)).willReturn(walletDTO);
-
+    @Description("Should return wallet by id for wallet owner")
+    void getWalletById_forWalletOwner_returnsWalletDto() throws Exception {
         mockMvc.perform(get("/api/v1/wallets/{walletId}", WALLET_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -48,25 +34,29 @@ class WalletControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(USER_MAIL)
-    void getWalletById_notFound() throws Exception {
-        Mockito.when(walletService.getWalletById(anyLong())).thenThrow(new ResourceNotFoundException("Wallet not found"));
-
-        mockMvc.perform(get("/api/v1/wallets/{walletId}", WALLET_ID)
+    @WithUserDetails(WALLET_MEMBER_MAIL)
+    @Description("Should return wallet by id for shared wallet")
+    void getWalletById_forSharedWallet_returnsWalletDto() throws Exception {
+        mockMvc.perform(get("/api/v1/wallets/{walletId}", SHARED_WALLET_ID)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk())
+                .andExpect(WALLET_DTO_MATCHER.contentJson(walletDTO));
+    }
+
+    @Test
+    @WithUserDetails(USER_MAIL)
+    void getWalletById_accessDenied() throws Exception {
+        mockMvc.perform(get("/api/v1/wallets/{walletId}", NOT_EXISTING_WALLET_ID)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     @Test
     @WithUserDetails(USER_MAIL)
     void createWallet_returnsWalletDto() throws Exception {
-        Mockito.when(walletService.createWallet(any(Wallet.class))).thenReturn(wallet);
-        Mockito.when(walletMapper.toEntity(any(WalletDTO.class))).thenReturn(wallet);
-        Mockito.when(walletMapper.toDto(any(Wallet.class))).thenReturn(walletDTO);
-
         mockMvc.perform(post("/api/v1/wallets")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.writeValue(walletDTO)))
+                        .content(objectMapper.writeValueAsString(walletDTO)))
                 .andExpect(status().isOk())
                 .andExpect(WALLET_DTO_MATCHER.contentJson(walletDTO));
     }
@@ -85,10 +75,6 @@ class WalletControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(USER_MAIL)
     void updateWallet_returnsWalletDto() throws Exception {
-        Mockito.when(walletService.updateWallet(any(Wallet.class))).thenReturn(wallet);
-        Mockito.when(walletMapper.toEntity(any(WalletDTO.class))).thenReturn(wallet);
-        Mockito.when(walletMapper.toDto(any(Wallet.class))).thenReturn(walletDTO);
-
         mockMvc.perform(put("/api/v1/wallets")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtil.writeValue(walletDTO)))
@@ -99,8 +85,6 @@ class WalletControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(USER_MAIL)
     void deleteWallet_success() throws Exception {
-        Mockito.doNothing().when(walletService).deleteWallet(anyLong());
-
         mockMvc.perform(delete("/api/v1/wallets/{walletId}", WALLET_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -108,11 +92,9 @@ class WalletControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(USER_MAIL)
-    void deleteWallet_notFound() throws Exception {
-        Mockito.doThrow(new ResourceNotFoundException("Wallet not found")).when(walletService).deleteWallet(anyLong());
-
-        mockMvc.perform(delete("/api/v1/wallets/{walletId}", WALLET_ID)
+    void deleteWallet_accessDenied() throws Exception {
+        mockMvc.perform(delete("/api/v1/wallets/{walletId}", NOT_EXISTING_WALLET_ID)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden());
     }
 }

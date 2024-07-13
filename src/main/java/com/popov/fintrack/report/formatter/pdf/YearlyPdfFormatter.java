@@ -80,14 +80,27 @@ public class YearlyPdfFormatter extends BasePdfFormatter {
     private void addMetricTable(Document document, YearlySummary yearlySummary) throws DocumentException {
         PdfPTable metricTable = createTable(2, 1, 1);
         addTableHeader(metricTable, "Metric", "Month");
+
         addCell(metricTable, "Highest Income");
-        addCell(metricTable, yearlySummary.getHighestIncomeMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        Month highestIncomeMonth = yearlySummary.getHighestIncomeMonth();
+        String highestIncomeMonthDisplay = highestIncomeMonth != null ? highestIncomeMonth.getDisplayName(TextStyle.FULL, Locale.ENGLISH) : "Not Available";
+        addCell(metricTable, highestIncomeMonthDisplay);
+
         addCell(metricTable, "Lowest Income");
-        addCell(metricTable, yearlySummary.getLowestIncomeMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        Month lowestIncomeMonth = yearlySummary.getLowestIncomeMonth();
+        String lowestIncomeMonthDisplay = lowestIncomeMonth != null ? lowestIncomeMonth.getDisplayName(TextStyle.FULL, Locale.ENGLISH) : "Not Available";
+        addCell(metricTable, lowestIncomeMonthDisplay);
+
         addCell(metricTable, "Highest Expense");
-        addCell(metricTable, yearlySummary.getMostExpensiveMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        Month mostExpensiveMonth = yearlySummary.getMostExpensiveMonth();
+        String mostExpensiveMonthDisplay = mostExpensiveMonth != null ? mostExpensiveMonth.getDisplayName(TextStyle.FULL, Locale.ENGLISH) : "Not Available";
+        addCell(metricTable, mostExpensiveMonthDisplay);
+
         addCell(metricTable, "Lowest Expense");
-        addCell(metricTable, yearlySummary.getLeastExpensiveMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        Month leastExpensiveMonth = yearlySummary.getLeastExpensiveMonth();
+        String leastExpensiveMonthDisplay = leastExpensiveMonth != null ? leastExpensiveMonth.getDisplayName(TextStyle.FULL, Locale.ENGLISH) : "Not Available";
+        addCell(metricTable, leastExpensiveMonthDisplay);
+
         document.add(metricTable);
     }
 

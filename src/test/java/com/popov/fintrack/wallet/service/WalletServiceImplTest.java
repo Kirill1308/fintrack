@@ -2,13 +2,11 @@ package com.popov.fintrack.wallet.service;
 
 import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.user.UserService;
-import com.popov.fintrack.user.model.User;
 import com.popov.fintrack.wallet.WalletRepository;
 import com.popov.fintrack.wallet.membership.MemberService;
 import com.popov.fintrack.wallet.membership.model.Member;
 import com.popov.fintrack.wallet.model.Wallet;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,12 +14,12 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.popov.fintrack.wallet.MemberTestData.member;
+import static com.popov.fintrack.wallet.WalletTestData.wallet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,27 +50,6 @@ class WalletServiceImplTest {
     @InjectMocks
     private WalletServiceImpl walletService;
 
-    private Wallet wallet;
-    private Member member;
-    private List<Wallet> walletList;
-
-    @BeforeEach
-    void setUp() {
-        wallet = new Wallet();
-        wallet.setId(1L);
-        wallet.setMembers(new HashSet<>());
-
-        User owner = new User();
-        owner.setId(1L);
-
-        member = new Member();
-        member.setUser(owner);
-        member.setWallet(wallet);
-
-        walletList = new ArrayList<>();
-        walletList.add(wallet);
-    }
-
     @Test
     void getWalletById_success() {
         when(walletRepository.findById(1L)).thenReturn(Optional.of(wallet));
@@ -80,7 +57,7 @@ class WalletServiceImplTest {
         Wallet foundWallet = walletService.getWalletById(1L);
 
         assertNotNull(foundWallet);
-        assertEquals(1L, foundWallet.getId());
+        assertEquals(wallet.getId(), foundWallet.getId());
         verify(walletRepository, times(1)).findById(1L);
     }
 
@@ -94,8 +71,8 @@ class WalletServiceImplTest {
 
     @Test
     void getWallets_success() {
-        when(walletRepository.findOwnedWallets(1L)).thenReturn(walletList);
-        when(memberService.findSharedWallets(1L)).thenReturn(walletList);
+        when(walletRepository.findOwnedWallets(1L)).thenReturn(List.of(wallet));
+        when(memberService.findSharedWallets(1L)).thenReturn(List.of(wallet));
 
         List<Wallet> wallets = walletService.getWallets(1L);
 
@@ -118,7 +95,7 @@ class WalletServiceImplTest {
 
     @Test
     void getMemberWallets_success() {
-        when(walletRepository.findByMembersUserId(1L)).thenReturn(walletList);
+        when(walletRepository.findByMembersUserId(1L)).thenReturn(List.of(wallet));
 
         List<Wallet> wallets = walletService.getMemberWallets(1L);
 
@@ -191,7 +168,7 @@ class WalletServiceImplTest {
         Wallet updatedWallet = walletService.updateWallet(wallet);
 
         assertNotNull(updatedWallet);
-        assertEquals(1L, updatedWallet.getId());
+        assertEquals(wallet.getId(), updatedWallet.getId());
         verify(walletRepository, times(1)).save(any(Wallet.class));
     }
 
@@ -219,7 +196,7 @@ class WalletServiceImplTest {
 
     @Test
     void getWalletsByIds_success() {
-        when(walletRepository.findByIdIn(anyList())).thenReturn(walletList);
+        when(walletRepository.findByIdIn(anyList())).thenReturn(List.of(wallet));
 
         List<Wallet> wallets = walletService.getWalletsByIds(List.of(1L, 2L));
 

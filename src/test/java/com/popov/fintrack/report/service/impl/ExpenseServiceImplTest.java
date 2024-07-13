@@ -3,8 +3,6 @@ package com.popov.fintrack.report.service.impl;
 import com.popov.fintrack.report.repository.ExpenseRepository;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Category;
-import com.popov.fintrack.transaction.model.Transaction;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.popov.fintrack.transaction.TransactionTestData.transaction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,27 +33,14 @@ class ExpenseServiceImplTest {
     @InjectMocks
     private ExpenseServiceImpl expenseService;
 
-    private Transaction transaction;
-    private List<Transaction> transactionList;
-
-    @BeforeEach
-    void setUp() {
-        transaction = new Transaction();
-        transaction.setId(1L);
-        transaction.setAmount(100.0);
-        transaction.setDateCreated(LocalDate.now());
-
-        transactionList = List.of(transaction);
-    }
-
     @Test
     void getTotalFilteredExpenses_success() {
-        when(expenseRepository.findAll(any(Specification.class))).thenReturn(transactionList);
+        when(expenseRepository.findAll(any(Specification.class))).thenReturn(List.of(transaction));
 
         FilterDTO filterDTO = new FilterDTO();
         Double totalExpenses = expenseService.getTotalFilteredExpenses(filterDTO);
 
-        assertEquals(100.0, totalExpenses);
+        assertEquals(1500.0, totalExpenses);
         verify(expenseRepository, times(1)).findAll(any(Specification.class));
     }
 
@@ -172,20 +158,20 @@ class ExpenseServiceImplTest {
 
     @Test
     void getExpensesPerDate_success() {
-        when(expenseRepository.findAll(any(Specification.class))).thenReturn(transactionList);
+        when(expenseRepository.findAll(any(Specification.class))).thenReturn(List.of(transaction));
 
         FilterDTO filterDTO = new FilterDTO();
         Map<LocalDate, Double> expensesPerDate = expenseService.getExpensesPerDate(filterDTO);
 
         assertNotNull(expensesPerDate);
         assertEquals(1, expensesPerDate.size());
-        assertEquals(100.0, expensesPerDate.get(transaction.getDateCreated()));
+        assertEquals(1500.0, expensesPerDate.get(transaction.getDateCreated()));
         verify(expenseRepository, times(1)).findAll(any(Specification.class));
     }
 
     @Test
     void getExpensesPerCategory_FilterDTO_success() {
-        when(expenseRepository.findAll(any(Specification.class))).thenReturn(transactionList);
+        when(expenseRepository.findAll(any(Specification.class))).thenReturn(List.of(transaction));
 
         FilterDTO filterDTO = new FilterDTO();
         transaction.setCategory(Category.GROCERIES);
@@ -193,7 +179,7 @@ class ExpenseServiceImplTest {
 
         assertNotNull(expensesPerCategory);
         assertEquals(1, expensesPerCategory.size());
-        assertEquals(100.0, expensesPerCategory.get(Category.GROCERIES));
+        assertEquals(1500.0, expensesPerCategory.get(Category.GROCERIES));
         verify(expenseRepository, times(1)).findAll(any(Specification.class));
     }
 }

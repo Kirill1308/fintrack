@@ -11,9 +11,10 @@ public class WalletTestData {
     public static final MatcherFactory.Matcher<WalletDTO> WALLET_DTO_MATCHER =
             MatcherFactory.usingIgnoringFieldsComparator(WalletDTO.class);
 
-    public static final long WALLET_ID = 2;
-    public static final long SHARED_WALLET_ID = 2;
-    public static final long USER_1_WALLET_ID = 2;
+    public static final Long WALLET_ID = 2L;
+    public static final Long NOT_EXISTING_WALLET_ID = 10L;
+    public static final Long SHARED_WALLET_ID = 2L;
+    public static final Long USER_1_WALLET_ID = 2L;
 
     public static final Wallet wallet;
     public static final WalletDTO walletDTO;

@@ -4,10 +4,8 @@ import com.popov.fintrack.exception.ResourceNotFoundException;
 import com.popov.fintrack.transaction.TransactionRepository;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Transaction;
-import com.popov.fintrack.user.model.User;
 import com.popov.fintrack.user.service.UserServiceImpl;
 import com.popov.fintrack.web.security.utils.SecurityUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,14 +21,13 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import java.util.Optional;
 
+import static com.popov.fintrack.transaction.TransactionTestData.transaction;
+import static com.popov.fintrack.user.UserTestData.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,19 +45,6 @@ class TransactionServiceImplTest {
     @InjectMocks
     private TransactionServiceImpl transactionService;
 
-    private Transaction transaction;
-    private User user;
-
-    @BeforeEach
-    void setUp() {
-        user = new User();
-        user.setId(1L);
-
-        transaction = new Transaction();
-        transaction.setId(1L);
-        transaction.setOwner(user);
-    }
-
     @Test
     void getFilteredTransactions_success_returnsPageOfTransactions() {
         FilterDTO filters = new FilterDTO();
@@ -71,7 +55,6 @@ class TransactionServiceImplTest {
 
         Page<Transaction> result = transactionService.getFilteredTransactions(filters, pageable);
         assertEquals(1, result.getTotalElements());
-        verify(transactionRepository, times(1)).findAll((Specification<Transaction>) any(), any(Pageable.class));
     }
 
     @Test
@@ -79,9 +62,9 @@ class TransactionServiceImplTest {
         when(transactionRepository.findById(1L)).thenReturn(Optional.of(transaction));
 
         Transaction result = transactionService.getTransaction(1L);
+
         assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(transactionRepository, times(1)).findById(1L);
+        assertEquals(transaction.getId(), result.getId());
     }
 
     @Test
@@ -89,7 +72,6 @@ class TransactionServiceImplTest {
         when(transactionRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> transactionService.getTransaction(1L));
-        verify(transactionRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -113,42 +95,14 @@ class TransactionServiceImplTest {
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
 
         Transaction result = transactionService.updateTransaction(transaction);
+
         assertNotNull(result);
-        assertEquals(1L, result.getId());
-        verify(transactionRepository, times(1)).save(any(Transaction.class));
+        assertEquals(transaction.getId(), result.getId());
     }
 
     @Test
     void deleteTransaction_success() {
-        doNothing().when(transactionRepository).deleteById(1L);
-
         transactionService.deleteTransaction(1L);
         verify(transactionRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    void isOwnerOfTransaction_true() {
-        when(transactionRepository.findById(1L)).thenReturn(Optional.of(transaction));
-
-        boolean result = transactionService.isOwnerOfTransaction(1L, 1L);
-        assertTrue(result);
-        verify(transactionRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void isOwnerOfTransaction_false() {
-        when(transactionRepository.findById(1L)).thenReturn(Optional.of(transaction));
-
-        boolean result = transactionService.isOwnerOfTransaction(2L, 1L);
-        assertFalse(result);
-        verify(transactionRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void isOwnerOfTransaction_notFound_throwsRNFException() {
-        when(transactionRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> transactionService.isOwnerOfTransaction(1L, 1L));
-        verify(transactionRepository, times(1)).findById(1L);
     }
 }

@@ -21,4 +21,6 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     List<Wallet> findByIdIn(List<Long> walletIds);
 
     List<Wallet> findByMembersUserId(Long userId);
+
+    boolean existsByIdAndOwnerId(Long walletId, Long userId);
 }

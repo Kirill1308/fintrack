@@ -43,7 +43,7 @@ public class WalletController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/{walletId}")
-//    @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
+    @PreAuthorize("@customSecurityExpression.hasAccessToWallet(#walletId)")
     public WalletDTO getWalletById(@PathVariable Long walletId) {
         log.info("Get wallet by ID: {}", walletId);
         Wallet wallet = walletService.getWalletById(walletId);
@@ -98,6 +98,5 @@ public class WalletController {
     public void deleteWallet(@PathVariable Long walletId) {
         log.info("Deleting wallet with ID: {}", walletId);
         walletService.deleteWallet(walletId);
-        log.info("Wallet deleted with ID: {}", walletId);
     }
 }

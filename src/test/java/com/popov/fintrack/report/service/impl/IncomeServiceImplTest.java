@@ -3,8 +3,6 @@ package com.popov.fintrack.report.service.impl;
 import com.popov.fintrack.report.repository.IncomeRepository;
 import com.popov.fintrack.transaction.dto.FilterDTO;
 import com.popov.fintrack.transaction.model.Category;
-import com.popov.fintrack.transaction.model.Transaction;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.popov.fintrack.transaction.TransactionTestData.transaction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,27 +33,14 @@ class IncomeServiceImplTest {
     @InjectMocks
     private IncomeServiceImpl incomeService;
 
-    private Transaction transaction;
-    private List<Transaction> transactionList;
-
-    @BeforeEach
-    void setUp() {
-        transaction = new Transaction();
-        transaction.setId(1L);
-        transaction.setAmount(100.0);
-        transaction.setDateCreated(LocalDate.now());
-
-        transactionList = List.of(transaction);
-    }
-
     @Test
     void getTotalFilteredIncome_success() {
-        when(incomeRepository.findAll(any(Specification.class))).thenReturn(transactionList);
+        when(incomeRepository.findAll(any(Specification.class))).thenReturn(List.of(transaction));
 
         FilterDTO filterDTO = new FilterDTO();
         Double totalIncome = incomeService.getTotalFilteredIncome(filterDTO);
 
-        assertEquals(100.0, totalIncome);
+        assertEquals(1500.0, totalIncome);
         verify(incomeRepository, times(1)).findAll(any(Specification.class));
     }
 
@@ -162,25 +148,25 @@ class IncomeServiceImplTest {
 
     @Test
     void getAverageDailyIncome_FilterDTO_success() {
-        when(incomeRepository.findAll(any(Specification.class))).thenReturn(transactionList);
+        when(incomeRepository.findAll(any(Specification.class))).thenReturn(List.of(transaction));
 
         FilterDTO filterDTO = new FilterDTO();
         Double averageDailyIncome = incomeService.getAverageDailyIncome(filterDTO);
 
-        assertEquals(100.0, averageDailyIncome);
+        assertEquals(1500.0, averageDailyIncome);
         verify(incomeRepository, times(1)).findAll(any(Specification.class));
     }
 
     @Test
     void getIncomesPerDate_success() {
-        when(incomeRepository.findAll(any(Specification.class))).thenReturn(transactionList);
+        when(incomeRepository.findAll(any(Specification.class))).thenReturn(List.of(transaction));
 
         FilterDTO filterDTO = new FilterDTO();
         Map<LocalDate, Double> incomesPerDate = incomeService.getIncomesPerDate(filterDTO);
 
         assertNotNull(incomesPerDate);
         assertEquals(1, incomesPerDate.size());
-        assertEquals(100.0, incomesPerDate.get(transaction.getDateCreated()));
+        assertEquals(1500.0, incomesPerDate.get(transaction.getDateCreated()));
         verify(incomeRepository, times(1)).findAll(any(Specification.class));
     }
 
