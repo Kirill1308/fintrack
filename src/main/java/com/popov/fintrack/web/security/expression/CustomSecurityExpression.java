@@ -29,6 +29,9 @@ public class CustomSecurityExpression {
     }
 
     public boolean hasAccessToWallets(final List<Long> walletIds) {
+        if (walletIds == null || walletIds.isEmpty()) {
+            return isAuthenticated();
+        }
         return walletIds.stream().allMatch(this::hasAccessToWallet);
     }
 
@@ -59,6 +62,10 @@ public class CustomSecurityExpression {
             }
         }
         return false;
+    }
+
+    private boolean isAuthenticated() {
+        return getAuthenticatedUserId() != null;
     }
 
     private Long getAuthenticatedUserId() {

@@ -57,10 +57,4 @@ public class TransactionServiceImpl implements TransactionService {
     public void deleteTransaction(Long id) {
         transactionRepository.deleteById(id);
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isOwnerOfTransaction(Long transactionId, Long userId) {
-        return transactionRepository.existsByIdAndOwnerId(transactionId, userId);
-    }
 }
