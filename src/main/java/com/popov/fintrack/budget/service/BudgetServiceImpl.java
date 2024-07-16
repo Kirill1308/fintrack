@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -69,7 +71,9 @@ public class BudgetServiceImpl implements BudgetService {
         List<Wallet> memberWallets = walletService.getMemberWallets(userId);
 
         return memberWallets.stream()
-                .flatMap(wallet -> wallet.getBudgets().stream())
+                .flatMap(wallet -> Optional.ofNullable(wallet.getBudgets())
+                        .orElseGet(Collections::emptyList)
+                        .stream())
                 .toList();
     }
 

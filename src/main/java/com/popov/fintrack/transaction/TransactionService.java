@@ -5,8 +5,6 @@ import com.popov.fintrack.transaction.model.Transaction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface TransactionService {
 
     Page<Transaction> getFilteredTransactions(FilterDTO filters, Pageable pageable);
@@ -18,6 +16,4 @@ public interface TransactionService {
     Transaction updateTransaction(Transaction transaction);
 
     void deleteTransaction(Long transactionId);
-
-    boolean isOwnerOfTransaction(Long transactionId, Long userId );
 }

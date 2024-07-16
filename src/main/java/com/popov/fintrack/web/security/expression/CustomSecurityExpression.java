@@ -1,10 +1,9 @@
 package com.popov.fintrack.web.security.expression;
 
-import com.popov.fintrack.budget.BudgetService;
-import com.popov.fintrack.transaction.TransactionService;
-import com.popov.fintrack.transaction.model.Transaction;
+import com.popov.fintrack.budget.BudgetRepository;
+import com.popov.fintrack.transaction.TransactionRepository;
 import com.popov.fintrack.user.model.Role;
-import com.popov.fintrack.wallet.WalletService;
+import com.popov.fintrack.wallet.WalletRepository;
 import com.popov.fintrack.web.security.JwtEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +19,9 @@ import java.util.List;
 @Slf4j
 public class CustomSecurityExpression {
 
-    private final WalletService walletService;
-    private final BudgetService budgetService;
-    private final TransactionService transactionService;
+    private final TransactionRepository transactionRepository;
+    private final WalletRepository walletRepository;
+    private final BudgetRepository budgetRepository;
 
     public boolean hasAccessUser(final Long id) {
         Long userId = getAuthenticatedUserId();
@@ -30,29 +29,28 @@ public class CustomSecurityExpression {
     }
 
     public boolean hasAccessToWallets(final List<Long> walletIds) {
+        if (walletIds == null || walletIds.isEmpty()) {
+            return isAuthenticated();
+        }
         return walletIds.stream().allMatch(this::hasAccessToWallet);
     }
 
     public boolean hasAccessToWallet(final Long walletId) {
         Long userId = getAuthenticatedUserId();
-        boolean isOwner = walletService.isOwnerOfWallet(userId, walletId);
-        boolean isMember = walletService.isMemberOfWallet(userId, walletId);
+        boolean isOwner = walletRepository.existsByIdAndOwnerId(walletId, userId);
+        boolean isMember = walletRepository.existsByUserIdAndId(userId, walletId);
+
         return isOwner || isMember;
     }
 
     public boolean hasAccessToBudget(final Long budgetId) {
         Long userId = getAuthenticatedUserId();
-        return budgetService.isOwnerOfBudget(userId, budgetId);
+        return budgetRepository.existsByIdAndOwnerId(budgetId, userId);
     }
 
     public boolean hasAccessToTransaction(final Long transactionId) {
         Long userId = getAuthenticatedUserId();
-        System.out.println("userId: " + userId + " transactionId: " + transactionId);
-
-        boolean isOwner = transactionService.isOwnerOfTransaction(transactionId, userId);
-        System.out.println("isOwner: " + isOwner);
-
-        return isOwner;
+        return transactionRepository.existsByIdAndOwnerId(transactionId, userId);
     }
 
     private boolean hasAnyRole(final Role... roles) {
@@ -64,6 +62,10 @@ public class CustomSecurityExpression {
             }
         }
         return false;
+    }
+
+    private boolean isAuthenticated() {
+        return getAuthenticatedUserId() != null;
     }
 
     private Long getAuthenticatedUserId() {

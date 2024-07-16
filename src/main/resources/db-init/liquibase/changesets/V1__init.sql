@@ -23,10 +23,9 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS users_roles
 (
-    user_id BIGINT       NOT NULL,
+    user_id BIGSERIAL    NOT NULL,
     role    VARCHAR(255) NOT NULL,
-    PRIMARY KEY (user_id, role),
-    CONSTRAINT fk_users_roles_users FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE NO ACTION
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS wallet
@@ -85,7 +84,6 @@ CREATE TABLE IF NOT EXISTS budget_wallet
 (
     budget_id BIGINT NOT NULL,
     wallet_id BIGINT NOT NULL,
-    PRIMARY KEY (budget_id, wallet_id),
     FOREIGN KEY (budget_id) REFERENCES budget (id) ON DELETE CASCADE,
     FOREIGN KEY (wallet_id) REFERENCES wallet (id) ON DELETE CASCADE
 );

@@ -43,15 +43,14 @@ public interface ExpenseRepository extends TransactionRepository {
     List<Object[]> getLeastExpensiveMonth(int year, Long walletId);
 
     @Query(value = """
-            SELECT AVG(monthly_totals.total)
-                FROM (
-                    SELECT EXTRACT(MONTH FROM t.dateCreated) as month, SUM(t.amount) as total
-                        FROM Transaction t
-                        WHERE t.wallet.id = :walletId
-                        AND t.type = 'EXPENSE'
-                        AND EXTRACT(YEAR FROM t.dateCreated) = :year
-                        GROUP BY month
-                ) as monthly_totals
+            SELECT AVG(total) FROM (
+                SELECT SUM(t.amount) AS total
+                FROM Transaction t
+                WHERE t.wallet.id = :walletId
+                AND t.type = 'EXPENSE'
+                AND YEAR(t.dateCreated) = :year
+                GROUP BY MONTH(t.dateCreated)
+            )
             """)
     Double getAverageMonthlyExpense(int year, Long walletId);
 
